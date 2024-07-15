@@ -1,19 +1,28 @@
 package nextstep.subway.acceptance;
 
-import nextstep.subway.utils.DatabaseCleanup;
+import io.restassured.RestAssured;
+import nextstep.subway.support.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestConstructor;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class AcceptanceTest {
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public abstract class AcceptanceTest {
+  @LocalServerPort private int port;
 
-    @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
+  @Autowired private DatabaseCleanup databaseCleanup;
+
+  @BeforeEach
+  protected void setUp() {
+    if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+      RestAssured.port = port;
+      databaseCleanup.afterPropertiesSet();
     }
+    databaseCleanup.execute();
+  }
 }
