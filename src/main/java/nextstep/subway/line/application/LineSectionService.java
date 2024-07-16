@@ -27,6 +27,6 @@ public class LineSectionService {
   public void removeLineSection(Long lineId, Long stationId) {
     Line line = lineReader.readById(lineId);
     Station station = stationReader.readById(stationId);
-    line.removeStation(station);
+    line.remove(station);
   }
 }

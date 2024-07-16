@@ -82,6 +82,22 @@ public class LineSection {
           LineSection.of(upStation, lineSection.getUpStation(), distance - lineSection.distance),
           LineSection.of(lineSection.getUpStation(), downStation, lineSection.distance));
     }
-    throw new IllegalArgumentException("LineSection#split not allowed!");
+    throw new IllegalArgumentException("LineSection#split 가 가능하지 않습니다.");
+  }
+
+  public boolean contains(Station station) {
+    return upStation.isSame(station) || downStation.isSame(station);
+  }
+
+  public LineSection merge(LineSection lineSection) {
+    if (canAppend(lineSection)) {
+      return LineSection.of(
+          upStation, lineSection.getDownStation(), distance + lineSection.distance);
+    }
+    if (canPrepend(lineSection)) {
+      return LineSection.of(
+          lineSection.getUpStation(), downStation, distance + lineSection.distance);
+    }
+    throw new IllegalArgumentException("LineSection#merge 가 가능하지 않습니다.");
   }
 }

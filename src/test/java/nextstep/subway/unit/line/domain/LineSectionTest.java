@@ -2,6 +2,7 @@ package nextstep.subway.unit.line.domain;
 
 import static nextstep.subway.support.Fixtures.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.List;
 import nextstep.subway.line.domain.LineSection;
@@ -85,5 +86,33 @@ class LineSectionTest {
     assertThat(sections).hasSize(2);
     assertThat(sections.get(0).isSame(LineSection.of(강남역, 역삼역, 20))).isTrue();
     assertThat(sections.get(1).isSame(LineSection.of(역삼역, 선릉역, 10))).isTrue();
+  }
+
+  @DisplayName("역이 구간의 상행역이나 하행역인지 확인한다.")
+  @Test
+  void contains() {
+    LineSection section = LineSection.of(강남역, 역삼역, 10);
+    assertThat(section.contains(강남역)).isTrue();
+    assertThat(section.contains(역삼역)).isTrue();
+    assertThat(section.contains(선릉역)).isFalse();
+  }
+
+  @DisplayName("두 구간을 병합한다.")
+  @Test
+  void merge() {
+    LineSection section = LineSection.of(강남역, 역삼역, 10);
+
+    LineSection combinedSection = section.merge(LineSection.of(역삼역, 선릉역, 20));
+
+    assertThat(combinedSection.isSame(LineSection.of(강남역, 선릉역, 30))).isTrue();
+  }
+
+  @DisplayName("구간을 병합할 수 없는 경우 예외를 던진다.")
+  @Test
+  void merge_throwsException() {
+    LineSection section = LineSection.of(강남역, 역삼역, 10);
+    LineSection disjointSection = LineSection.of(선릉역, 판교역, 20);
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> section.merge(disjointSection));
   }
 }
