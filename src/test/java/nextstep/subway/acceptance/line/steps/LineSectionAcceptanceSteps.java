@@ -87,7 +87,7 @@ public class LineSectionAcceptanceSteps {
     assertThat(stationIds).isNotEmpty().doesNotContain(station.getId());
   }
 
-  public static void 노선_구간_삭제_실패함(ExtractableResponse<Response> response, HttpStatus httpStatus) {
-    assertThat(response.statusCode()).isEqualTo(httpStatus.value());
+  public static void 노선_구간_삭제_실패함(ExtractableResponse<Response> response) {
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 }

@@ -17,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("지하철 구간 관리 기능 인수테스트")
@@ -120,60 +119,54 @@ class LineSectionAcceptanceTest {
     @Autowired StationRepository stationRepository;
     @Autowired LineRepository lineRepository;
 
-    /** Given 지하철역과 노선 그리고 하나 이상의 구간이 등록되어 있고 */
+    /** Given 지하철역과 노선 생성을 요청 하고 */
     @Override
     @BeforeEach
     protected void setUp() {
       super.setUp();
-      강남역 = stationRepository.save(강남역());
+      stationRepository.save(강남역());
       역삼역 = stationRepository.save(역삼역());
       선릉역 = stationRepository.save(선릉역());
-      판교역 = stationRepository.save(판교역());
-      이호선 =
-          lineRepository.save(
-              aLine().lineSections(new LineSections(강남_역삼_구간(), 역삼_선릉_구간())).build());
     }
 
-    /** When 하행 종점역 구간 제거를 요청하면 Then 해당 노선 조회 시 역 목록에서 하행 종점이 제거된다. */
-    @DisplayName("하행 종점역을 제거한다.")
+    /** Given 구간이 하나 이상 등록되어 있고 When 종점역 구간 제거를 요청하면 Then 해당 노선 조회 시 등록한 구간의 하행 종점역에서 제외된다. */
+    @DisplayName("지하철 구간을 제거한다.")
     @Test
-    void shouldRemoveTerminalDownStation() {
+    void removeLineSection() {
+      이호선 =
+          lineRepository.save(
+              aLine().id(1L).lineSections(new LineSections(강남_역삼_구간(), 역삼_선릉_구간())).build());
+
       ExtractableResponse<Response> response = 노선_구간_삭제_요청(이호선, 선릉역);
+
       노선_구간_삭제됨(response, 이호선, 선릉역);
     }
 
-    /** When 상행 종점역 구간 제거를 요청하면 Then 해당 노선 조회 시 역 목록에서 상행 종점역이 제거된다. */
-    @DisplayName("상행 종점역을 제거한다.")
+    /** Given 구간이 하나 이상 등록되어 있고 When 하행 종점역이 아닌 구간을 삭제 요청하면 Then 400 Bad Request 에러가 반환된다. */
+    @DisplayName("최종 종점 역이 아닌 구간 제거 시 에러가 발생한다.")
     @Test
-    void shouldRemoveTerminalUpStation() {
-      ExtractableResponse<Response> response = 노선_구간_삭제_요청(이호선, 강남역);
-      노선_구간_삭제됨(response, 이호선, 강남역);
-    }
+    void removeNonTerminalLineSectionShouldReturnError() {
+      이호선 =
+          lineRepository.save(
+              aLine().id(1L).lineSections(new LineSections(강남_역삼_구간(), 역삼_선릉_구간())).build());
 
-    /** When 노선 중간역 구간 제거를 요청하면 Then 해당 노선 조회 시 역 목록에서 중간역이 제거된다. */
-    @DisplayName("노선 가운데 역을 제거한다.")
-    @Test
-    void shouldRemoveStationInTheMiddle() {
       ExtractableResponse<Response> response = 노선_구간_삭제_요청(이호선, 역삼역);
-      노선_구간_삭제됨(response, 이호선, 역삼역);
+
+      노선_구간_삭제_실패함(response);
     }
 
-    @DisplayName("노선 구간에 등록되어 있지 않은 역을 제거 요청하면 404 Not Found 에러가 응답된다.")
-    @Test
-    void shouldReturnErrorWhenStationDoesNotExist() {
-      ExtractableResponse<Response> response = 노선_구간_삭제_요청(이호선, 판교역);
-      노선_구간_삭제_실패함(response, HttpStatus.NOT_FOUND);
-    }
-
-    /** Given 노선의 구간이 하나인 경우 When 구간을 삭제 요청하면 Then 400 Bad Request 에러가 응답된다. */
+    /** Given 노선의 구간이 1개인 경우 When 구간을 삭제 요청하면 Then 400 Bad Request 에러가 반환된다. */
     @DisplayName("구간이 하나만 존재할 때 구간 제거 시 에러가 발생한다.")
     @Test
     void removeLastLineSectionShouldReturnError() {
+      이호선 =
+          lineRepository.save(
+              aLine().id(1L).lineSections(new LineSections(강남_역삼_구간(), 역삼_선릉_구간())).build());
       노선_구간_삭제_요청(이호선, 선릉역);
 
       ExtractableResponse<Response> response = 노선_구간_삭제_요청(이호선, 역삼역);
 
-      노선_구간_삭제_실패함(response, HttpStatus.BAD_REQUEST);
+      노선_구간_삭제_실패함(response);
     }
   }
 }

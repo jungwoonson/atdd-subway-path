@@ -57,7 +57,7 @@ public class Line {
     return lineSections.getStations();
   }
 
-  public void remove(Station station) {
-    lineSections.remove(station);
+  public void removeStation(Station station) {
+    lineSections.removeLast(station);
   }
 }

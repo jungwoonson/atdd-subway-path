@@ -9,9 +9,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.exception.CannotAddLineSectionException;
-import nextstep.subway.line.exception.CannotRemoveLastLineSectionException;
 import nextstep.subway.line.exception.LineSectionAlreadyExistsException;
-import nextstep.subway.line.exception.StationNotFoundInLineException;
+import nextstep.subway.line.exception.RemoveLastLineSectionException;
+import nextstep.subway.line.exception.RemoveNonTerminalStationException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -148,54 +148,21 @@ public class LineSections {
     return Collections.unmodifiableList(stations);
   }
 
-  public void remove(Station station) {
+  public void removeLast(Station station) {
     validateRemove(station);
-    if (removeTerminal(station)) {
-      return;
-    }
-    if (removeMiddle(station)) {
-      return;
-    }
-    throw new IllegalArgumentException("역 #" + station.getId() + " 를 제거할 수 없습니다.");
-  }
-
-  private boolean removeMiddle(Station station) {
-    OptionalInt optionalIndex = indexOfSectionContaining(station);
-    if (optionalIndex.isEmpty()) {
-      return false;
-    }
-    int index = optionalIndex.getAsInt();
-    LineSection upSection = sections.remove(index);
-    LineSection downSection = sections.remove(index);
-    LineSection mergedSection = upSection.merge(downSection);
-    sections.add(index, mergedSection);
-    return true;
-  }
-
-  private OptionalInt indexOfSectionContaining(Station station) {
-    return IntStream.range(0, sections.size())
-        .filter(it -> sections.get(it).contains(station))
-        .findFirst();
-  }
-
-  private boolean removeTerminal(Station station) {
-    if (getFirst().getUpStation().isSame(station)) {
-      sections.remove(0);
-      return true;
-    }
-    if (getLast().getDownStation().isSame(station)) {
-      sections.remove(sections.size() - 1);
-      return true;
-    }
-    return false;
+    sections.remove(sections.size() - 1);
   }
 
   private void validateRemove(Station station) {
-    if (!getStations().contains(station)) {
-      throw new StationNotFoundInLineException(station.getId());
+    if (!isTerminalStation(station)) {
+      throw new RemoveNonTerminalStationException();
     }
     if (size() <= 1) {
-      throw new CannotRemoveLastLineSectionException();
+      throw new RemoveLastLineSectionException();
     }
+  }
+
+  private boolean isTerminalStation(Station station) {
+    return getLast().getDownStation().isSame(station);
   }
 }
