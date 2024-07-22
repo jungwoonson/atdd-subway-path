@@ -46,10 +46,23 @@ class LineTest {
     @Test
     @DisplayName("구간을 조회한다.")
     void getStations() {
+        // when
+        신분당선.getStationIds();
+
+        // then
+        assertThat(신분당선.getStationIds()).containsExactly(강남역.getId(), 성수역.getId());
     }
 
     @Test
     @DisplayName("구간을 제거한다.")
     void removeSection() {
+        // given
+        신분당선.registerSection(성수역, 건대입구역, 10);
+
+        // when
+        신분당선.deleteSection(건대입구역.getId());
+
+        // then
+        assertThat(신분당선.getStationIds()).containsExactly(강남역.getId(), 성수역.getId());
     }
 }
