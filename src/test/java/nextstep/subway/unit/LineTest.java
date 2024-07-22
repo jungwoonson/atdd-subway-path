@@ -60,7 +60,7 @@ class LineTest {
         신분당선.registerSection(성수역, 건대입구역, 10);
 
         // when
-        신분당선.deleteSection(건대입구역.getId());
+        신분당선.deleteSection(건대입구역);
 
         // then
         assertThat(신분당선.getStationIds()).containsExactly(강남역.getId(), 성수역.getId());

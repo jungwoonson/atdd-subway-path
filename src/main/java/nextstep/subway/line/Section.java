@@ -39,8 +39,8 @@ public class Section {
         return !downStation.equals(station);
     }
 
-    public boolean isDownStation(Long stationId) {
-        return downStation.isSameId(stationId);
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Long getId() {

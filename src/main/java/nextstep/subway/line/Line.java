@@ -48,8 +48,8 @@ public class Line {
                 .build();
     }
 
-    public void deleteSection(Long stationId) {
-        sections.delete(stationId);
+    public void deleteSection(Station station) {
+        sections.delete(station);
     }
 
     public List<Long> getStationIds() {

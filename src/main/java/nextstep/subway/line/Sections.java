@@ -91,12 +91,12 @@ public class Sections {
         }
     }
 
-    public void delete(Long stationId) {
+    public void delete(Station station) {
         if (hasLastOneSection()) {
             throw new LastOneSectionException();
         }
         Section lastSection = findLastSection();
-        if (!lastSection.isDownStation(stationId)) {
+        if (!lastSection.isDownStation(station)) {
             throw new NotDownStationException();
         }
         sections.remove(lastSection);

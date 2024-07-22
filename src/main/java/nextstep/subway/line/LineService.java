@@ -70,7 +70,8 @@ public class LineService {
     @Transactional
     public LineResponse deleteSection(Long lineId, Long stationId) {
         Line line = findLineBy(lineId);
-        line.deleteSection(stationId);
+        Station downStation = findStationBy(stationId);
+        line.deleteSection(downStation);
         return createLineResponse(lineRepository.save(line));
     }
 
