@@ -48,6 +48,10 @@ public class Line {
                 .build();
     }
 
+    public void deleteSection(Long stationId) {
+        sections.delete(stationId);
+    }
+
     public List<Long> getStationIds() {
         return sections.getStationIds();
     }
@@ -62,10 +66,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public void deleteSection(Long stationId) {
-        sections.delete(stationId);
     }
 
     public static Builder builder() {

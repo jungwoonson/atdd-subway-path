@@ -14,7 +14,7 @@ public class Station {
     public Station() {
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
     }
 
@@ -23,8 +23,21 @@ public class Station {
         this.name = station.getName();
     }
 
+    private Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public static Station from(String name) {
+        return new Station(name);
+    }
+
     public static Station from(Station station) {
         return new Station(station);
+    }
+
+    public static Station of(Long id, String name) {
+        return new Station(id, name);
     }
 
     public boolean isSameId(Long stationId) {
