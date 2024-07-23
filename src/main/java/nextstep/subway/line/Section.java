@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -99,5 +100,22 @@ public class Section {
         public Section build() {
             return new Section(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return isFirst == section.isFirst
+                && Objects.equals(line.getId(), section.line.getId())
+                && Objects.equals(upStation, section.upStation)
+                && Objects.equals(downStation, section.downStation)
+                && Objects.equals(distance, section.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(line.getId(), upStation, downStation, distance, isFirst);
     }
 }

@@ -12,23 +12,35 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "line", orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections;
 
     public Sections() {
+        sections = new ArrayList<>();
     }
 
     private Sections(Section section) {
+        sections = new ArrayList<>();
         sections.add(section);
+    }
+
+    private Sections(Section ...section) {
+        sections = Arrays.asList(section);
     }
 
     public static Sections of(Line line, Station upStation, Station downStation, Integer distance) {
         return new Sections(createFirstSection(line, upStation, downStation, distance));
+    }
+
+    public static Sections of(Section ...section) {
+        return new Sections(section);
     }
 
     private static Section createFirstSection(Line line, Station upStation, Station downStation, Integer distance) {
@@ -67,13 +79,10 @@ public class Sections {
 
     private Stations extractStations() {
         Section firstSection = findFirstSection();
-
         Stations stations = Stations.of(firstSection.getUpStation(), firstSection.getDownStation());
-
         for (Section section : sections) {
             appendStations(stations, section);
         }
-
         return stations;
     }
 
@@ -108,5 +117,18 @@ public class Sections {
 
     public boolean isEmpty() {
         return sections.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sections sections1 = (Sections) o;
+        return Objects.equals(sections, sections1.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections);
     }
 }
