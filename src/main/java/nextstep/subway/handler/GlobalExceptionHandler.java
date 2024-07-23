@@ -17,8 +17,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            NotSameNewUpStationAndExistingDownStationException.class,
-            AlreadyRegisteredStationException.class,
             NotDownStationException.class,
             LastOneSectionException.class
     })
