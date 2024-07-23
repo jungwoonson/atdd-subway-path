@@ -2,12 +2,15 @@ package nextstep.subway.unit;
 
 import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
+import nextstep.subway.line.exception.NotLessThanExistingDistanceException;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.unit.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SectionTest {
 
@@ -32,6 +35,20 @@ public class SectionTest {
 
         // then
         assertThat(actual).isEqualTo(홍대역_양재역);
+    }
+
+    @Test
+    @DisplayName("구간 분리 시 새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외를 발생시킨다.")
+    void GraterOrEqualExistingDistanceExceptionTest() {
+        // given
+        Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, true);
+        Section 강남역_홍대역 = createSection(신분당선, 강남역, 홍대역, DEFAULT_DISTANCE, false);
+
+        // when
+        ThrowingCallable actual = () -> 강남역_양재역.dividedSection(강남역_홍대역);
+
+        // then
+        assertThatThrownBy(actual).isInstanceOf(NotLessThanExistingDistanceException.class);
     }
 
     @Test

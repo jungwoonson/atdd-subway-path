@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.exception.NotLessThanExistingDistanceException;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
@@ -44,6 +45,9 @@ public class Section {
     }
 
     private Section createDividedSection(Section section) {
+        if (distance <= section.distance) {
+            throw new NotLessThanExistingDistanceException();
+        }
         return new Builder()
                 .line(line)
                 .upStation(section.downStation)
