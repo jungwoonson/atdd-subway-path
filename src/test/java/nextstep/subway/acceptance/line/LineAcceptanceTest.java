@@ -130,13 +130,13 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * Given: 특정 지하철 노선이 등록되어 있고,
-     * When: 해당 노선에 구간을 등록하면,
-     * Then: 해당 노선에 구간에 추가된다.
+     * Given: 특정 노선에 A-B 구간이 등록되어 있고,
+     * When: A-B 뒤에 B-C 구간을 추가하면,
+     * Then: 노선 조회 시 A-B-C 구간이 등록되어있다.
      */
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("노선의 구간 가장 뒤쪽에 구간을 등록한다.")
     @Test
-    void registerSectionTest() {
+    void registerEndSectionTest() {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
@@ -179,42 +179,6 @@ public class LineAcceptanceTest {
 
         // then
         assertResponseCode(response, HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Given: 특정 노선이 등록되어 있고,
-     * When: 노선의 하행역과 다른 역이 상행역인 구간을 등록하면,
-     * Then: 오류를 응답한다.
-     */
-    @DisplayName("새로운 구간의 상행역이 해당 노선의 하행역이 아니면 오류가 발생한다.")
-    @Test
-    void notSameUpStationAndDownStationExceptionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 강남역_성수역_구간_PARAM);
-
-        // then
-        assertResponseCode(response, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Given: 특정 노선이 등록되어 있고,
-     * When: 노선에 등록되어 있는 역이 하행역인 구간을 등록하면,
-     * Then: 오류를 응답한다.
-     */
-    @DisplayName("새로운 구간의 상행역이 해당 노선의 하행역이 아니면 오류가 발생한다.")
-    @Test
-    void alreadyRegisteredStationExceptionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 홍대역_분당역_구간_PARAM);
-
-        // then
-        assertResponseCode(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
