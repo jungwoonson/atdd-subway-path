@@ -63,7 +63,7 @@ public class LineService {
     }
 
     private Line findLineBy(Long id) {
-        return lineRepository.findOneById(id)
+        return lineRepository.findById(id)
                 .orElseThrow(NotExistLineException::new);
     }
 
