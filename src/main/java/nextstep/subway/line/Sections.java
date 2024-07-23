@@ -9,10 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -60,19 +58,19 @@ public class Sections {
     }
 
     private void addMiddleSection(Section section) {
-        int index = 0;
-        Section includedSection = null;
-        for (int i = 0; i < sections.size(); i++) {
-            if (sections.get(i).sameUpStation(section)) {
-                index = i;
-                includedSection = sections.get(i);
-                break;
-            }
-        }
-        if (includedSection == null) {
-            return;
-        }
-        Section dividedSection = includedSection.dividedSection(section);
+        OptionalInt indexOpt = findSameUpStationIndex(section);
+        indexOpt.ifPresent(index -> dividedSection(index, section));
+    }
+
+    private OptionalInt findSameUpStationIndex(Section section) {
+        return IntStream.range(0, sections.size())
+                .filter(i -> sections.get(i).sameUpStation(section))
+                .findFirst();
+    }
+
+    private void dividedSection(int index, Section newSection) {
+        Section existingSection = sections.get(index);
+        Section dividedSection = existingSection.dividedSection(newSection);
         sections.add(index + 1, dividedSection);
     }
 
