@@ -35,7 +35,7 @@ public class LineAcceptanceTestFixture {
             "color", GREEN,
             "upStationId", 분당역_ID,
             "downStationId", 강남역_ID,
-            "distance", DEFAULT_DISTANCE
+            "distance", 4
     );
 
     static final Map<String, Object> MODIFY_PARAM = Map.of(
@@ -55,10 +55,10 @@ public class LineAcceptanceTestFixture {
             "distance", DEFAULT_DISTANCE
     );
 
-    static final Map<String, Object> 강남역_성수역_구간_PARAM = Map.of(
-            "upStationId", 강남역_ID,
+    static final Map<String, Object> 분당역_성수역_구간_PARAM = Map.of(
+            "upStationId", 분당역_ID,
             "downStationId", 성수역_ID,
-            "distance", DEFAULT_DISTANCE
+            "distance", 6
     );
 
     static final Map<String, Object> 홍대역_분당역_구간_PARAM = Map.of(

@@ -59,7 +59,8 @@ public class LineService {
         Station downStation = findStationBy(sectionRequest.getDownStationId());
         Line line = findLineBy(id);
         line.registerSection(upStation, downStation, sectionRequest.getDistance());
-        return createLineResponse(lineRepository.save(line));
+        Line line1 = lineRepository.save(line);
+        return createLineResponse(line1);
     }
 
     private Line findLineBy(Long id) {

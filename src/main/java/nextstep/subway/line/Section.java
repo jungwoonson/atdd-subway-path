@@ -14,10 +14,10 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lineId", referencedColumnName = "id")
     private Line line;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "upStationId", referencedColumnName = "id")
     private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "downStationId", referencedColumnName = "id")
     private Station downStation;
     @Column(nullable = false)
@@ -36,12 +36,33 @@ public class Section {
         this.isFirst = builder.isFirst;
     }
 
-    public boolean notSameDownStation(Station station) {
-        return !downStation.equals(station);
+    public Section dividedSection(Section section) {
+        Section dividedSection = createDividedSection(section);
+        downStation = section.downStation;
+        distance = section.getDistance();
+        return dividedSection;
+    }
+
+    private Section createDividedSection(Section section) {
+        return new Builder()
+                .line(line)
+                .upStation(section.downStation)
+                .downStation(downStation)
+                .distance(distance - section.distance)
+                .isFirst(false)
+                .build();
     }
 
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean sameUpStation(Section station) {
+        return upStation.equals(station.upStation);
+    }
+
+    public boolean sameDownStationAndUpStationOf(Section station) {
+        return downStation.equals(station.upStation);
     }
 
     public Long getId() {
@@ -54,6 +75,10 @@ public class Section {
 
     public Station getDownStation() {
         return Station.from(downStation);
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 
     public boolean isFirst() {

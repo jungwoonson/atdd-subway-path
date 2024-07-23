@@ -149,6 +149,27 @@ public class LineAcceptanceTest {
         assertThat(stationsIds).containsExactly(분당역_ID, 홍대역_ID, 강남역_ID);
     }
 
+
+    /**
+     * Given: 특정 노선에 A-C 구간이 등록되어 있고,
+     * When: A-C 사이에  A-B 구간을 추가하면,
+     * Then: 노선 조회 시 A-B-C 구간이 등록되어있다.
+     */
+    @DisplayName("노선의 구간 중간에 구간을 등록한다.")
+    @Test
+    void registerMiddleSectionTest() {
+        // given
+        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
+
+        // when
+        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 분당역_성수역_구간_PARAM);
+
+        // then
+        assertResponseCode(response, HttpStatus.CREATED);
+        List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
+        assertThat(stationsIds).containsExactly(분당역_ID, 성수역_ID, 홍대역_ID);
+    }
+
     /**
      * When: 존재하지 않는 노선에 구간을 등록하면,
      * Then: 오류를 응답한다.

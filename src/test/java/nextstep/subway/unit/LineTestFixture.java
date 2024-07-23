@@ -11,9 +11,12 @@ import java.util.List;
 
 public class LineTestFixture {
     public static final int DEFAULT_DISTANCE = 10;
+    public static final int 강남역_홍대역_DISTANCE = 4;
+    public static final int 홍대역_양재역_DISTANCE = 6;
     public static final Station 강남역 = Station.of(1L, "강남역");
     public static final Station 양재역 = Station.of(2L, "양재역");
     public static final Station 교대역 = Station.of(3L, "교대역");
+    public static final Station 홍대역 = Station.of(4L, "홍대역");
 
     public static Line 신분당선(Station upStation, Station downStation) {
         return Line.builder()
@@ -26,12 +29,12 @@ public class LineTestFixture {
                 .build();
     }
 
-    public static  Section createSection(Line line, Station upStation, Station downStation, boolean isFirst) {
+    public static Section createSection(Line line, Station upStation, Station downStation, int distance, boolean isFirst) {
         return Section.builder()
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(DEFAULT_DISTANCE)
+                .distance(distance)
                 .isFirst(isFirst)
                 .build();
     }

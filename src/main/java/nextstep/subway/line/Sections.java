@@ -1,9 +1,7 @@
 package nextstep.subway.line;
 
-import nextstep.subway.line.exception.AlreadyRegisteredStationException;
 import nextstep.subway.line.exception.LastOneSectionException;
 import nextstep.subway.line.exception.NotDownStationException;
-import nextstep.subway.line.exception.NotSameNewUpStationAndExistingDownStationException;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.Stations;
 
@@ -32,7 +30,7 @@ public class Sections {
     }
 
     private Sections(Section ...section) {
-        sections = Arrays.asList(section);
+        sections = new ArrayList<>(Arrays.asList(section));
     }
 
     public static Sections of(Line line, Station upStation, Station downStation, Integer distance) {
@@ -54,23 +52,32 @@ public class Sections {
     }
 
     public void add(Section section) {
-        Section lastSection = findLastSection();
-        if (lastSection.notSameDownStation(section.getUpStation())) {
-            throw new NotSameNewUpStationAndExistingDownStationException();
+        if (findLastSection().sameDownStationAndUpStationOf(section)) {
+            sections.add(section);
+            return;
         }
-        if (existStation(section.getDownStation())) {
-            throw new AlreadyRegisteredStationException();
+        addMiddleSection(section);
+    }
+
+    private void addMiddleSection(Section section) {
+        int index = 0;
+        Section includedSection = null;
+        for (int i = 0; i < sections.size(); i++) {
+            if (sections.get(i).sameUpStation(section)) {
+                index = i;
+                includedSection = sections.get(i);
+                break;
+            }
         }
-        sections.add(section);
+        if (includedSection == null) {
+            return;
+        }
+        Section dividedSection = includedSection.dividedSection(section);
+        sections.add(index + 1, dividedSection);
     }
 
     private Section findLastSection() {
         return sections.get(sections.size() - 1);
-    }
-
-    private boolean existStation(Station downStation) {
-        Stations stations = extractStations();
-        return stations.existStation(downStation);
     }
 
     public List<Long> getStationIds() {
