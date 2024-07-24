@@ -72,10 +72,10 @@ public class Sections {
     private void addStartSection(Section section) {
         validateDuplicate(section.getUpStation());
 
+        Section beforeStartSection = findStartSection();
+        beforeStartSection.changeToNotFirst();
         section.changeToFirst();
-        sections.add(0, section);
-        Section beforeFirstSection = sections.get(1);
-        beforeFirstSection.changeToNotFirst();
+        sections.add(section);
     }
 
     private void addMiddleSection(Section section) {
@@ -86,7 +86,7 @@ public class Sections {
     }
 
     private void validateDuplicate(Station station) {
-        Stations stations = getStations();
+        Stations stations = getSortedStations();
         if (stations.contains(station)) {
             throw new DuplicateStationException(station.getName());
         }
@@ -101,39 +101,52 @@ public class Sections {
     private void dividedSection(int index, Section newSection) {
         Section existingSection = sections.get(index);
         Section dividedSection = existingSection.dividedSection(newSection);
-        sections.add(index + 1, dividedSection);
+        sections.add(dividedSection);
     }
 
-    private Section findEndSection() {
-        return sections.get(sections.size() - 1);
+    private Section findNextSection(Section section) {
+        return sections.stream()
+                .filter(it -> it.sameUpStation(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
-    private Section findStartSection() {
-        return sections.get(0);
+    private List<Section> getSortedSections() {
+        List<Section> sortedSections = new ArrayList<>();
+        Section currentSection = findStartSection();
+
+        sortedSections.add(currentSection);
+        while (sections.size() > sortedSections.size()) {
+            currentSection = findNextSection(currentSection);
+            sortedSections.add(currentSection);
+        }
+
+        return sortedSections;
     }
 
-    public List<Long> getStationIds() {
-        return extractStations().getStationIds();
+    public List<Long> getSortedStationIds() {
+        return getSortedStations().getStationIds();
     }
 
-    private Stations getStations() {
-        return extractStations();
-    }
-
-    private Stations extractStations() {
-        Section firstSection = findFirstSection();
-        Stations stations = Stations.of(firstSection.getUpStation(), firstSection.getDownStation());
+    private Stations getSortedStations() {
+        Section startSection = findStartSection();
+        Stations stations = Stations.of(startSection.getUpStation(), startSection.getDownStation());
         for (Section section : sections) {
             appendStations(stations, section);
         }
         return stations;
     }
 
-    private Section findFirstSection() {
+    private Section findStartSection() {
         return sections.stream()
                 .filter(Section::isFirst)
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
+
+    private Section findEndSection() {
+        List<Section> sortedSections = getSortedSections();
+        return sortedSections.get(sortedSections.size() - 1);
     }
 
     private void appendStations(Stations stations, Section section) {
@@ -163,11 +176,11 @@ public class Sections {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sections sections1 = (Sections) o;
-        return Objects.equals(sections, sections1.sections);
+        return Objects.equals(getSortedSections(), sections1.getSortedSections());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sections);
+        return Objects.hash(getSortedSections());
     }
 }

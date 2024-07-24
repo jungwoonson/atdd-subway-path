@@ -64,6 +64,10 @@ public class Section {
         return upStation.equals(station.upStation);
     }
 
+    public boolean sameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public boolean sameDownStationAndUpStationOf(Section section) {
         return downStation.equals(section.upStation);
     }
