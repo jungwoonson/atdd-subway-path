@@ -110,6 +110,6 @@ public class SectionsTest {
     }
 
     private static Section 강남역_교대역() {
-        return createSection(신분당선, 강남역, 교대역, DEFAULT_DISTANCE);
+        return createSection(신분당선, 강남역, 교대역, DEFAULT_DISTANCE + DEFAULT_DISTANCE);
     }
 }

@@ -180,16 +180,27 @@ public class Sections {
                 .orElseThrow(RuntimeException::new);
     }
 
+    private List<Section> getSortedSection() {
+        List<Section> sortedSections = new ArrayList<>();
+        Section targetSection = findStartSection();
+        sortedSections.add(targetSection);
+        while (sections.size() > sortedSections.size()) {
+            targetSection = findNextSection(targetSection);
+            sortedSections.add(targetSection);
+        }
+        return sortedSections;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sections sections1 = (Sections) o;
-        return Objects.equals(getSortedStations(), sections1.getSortedStations());
+        return Objects.equals(getSortedSection(), sections1.getSortedSection());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSortedStations());
+        return Objects.hash(getSortedSection());
     }
 }
