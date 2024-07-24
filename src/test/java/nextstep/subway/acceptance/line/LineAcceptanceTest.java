@@ -196,23 +196,32 @@ public class LineAcceptanceTest {
 
     /**
      * Given: 특정 노선에 구간이 2개 이상 등록되어 있고,
-     * When: 노선의 하행역을 제거하면,
-     * Then: 노선을 조회했을 때 하행역이 제거된다.
+     * When: 지하철 역의 위치에 상관없이 구간을 제거하면,
+     * Then: 노선을 조회했을 때 구간이 제거된다.
      */
     @DisplayName("지하철 노선에 구간을 제거한다.")
-    @Test
-    void deleteSectionTest() {
+    @ParameterizedTest
+    @MethodSource("deleteSectionParameters")
+    void deleteSectionTest(Long stationId, List<Long> expectedStationIds) {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
         addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
 
         // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 강남역_ID);
+        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), stationId);
 
         // then
         assertResponseCode(response, HttpStatus.OK);
         List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationIds).doesNotContain(강남역_ID);
+        assertThat(stationIds).isEqualTo(expectedStationIds);
+    }
+
+    private static Stream<Arguments> deleteSectionParameters() {
+        return Stream.of(
+                Arguments.of(분당역_ID, List.of(홍대역_ID, 강남역_ID)),
+                Arguments.of(홍대역_ID, List.of(홍대역_ID, 강남역_ID)),
+                Arguments.of(강남역_ID, List.of(분당역_ID, 홍대역_ID))
+        );
     }
 
     /**
