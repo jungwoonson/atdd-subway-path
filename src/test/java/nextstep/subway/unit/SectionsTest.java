@@ -40,18 +40,18 @@ public class SectionsTest {
     }
 
     private static Section 양재역_교대역() {
-        return createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE, false);
+        return createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE);
     }
 
     private static Section 강남역_양재역() {
-        return createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, true);
+        return createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
     }
 
     private static Section 강남역_홍대역() {
-        return createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE, true);
+        return createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE);
     }
 
     private static Section 홍대역_양재역() {
-        return createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE, false);
+        return createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE);
     }
 }

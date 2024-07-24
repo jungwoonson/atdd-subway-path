@@ -34,7 +34,7 @@ public class Section {
         this.upStation = builder.upStation;
         this.downStation = builder.downStation;
         this.distance = builder.distance;
-        this.isFirst = builder.isFirst;
+        this.isFirst = false;
     }
 
     public Section dividedSection(Section section) {
@@ -53,7 +53,6 @@ public class Section {
                 .upStation(section.downStation)
                 .downStation(downStation)
                 .distance(distance - section.distance)
-                .isFirst(false)
                 .build();
     }
 
@@ -111,7 +110,6 @@ public class Section {
         private Station upStation;
         private Station downStation;
         private Integer distance;
-        private boolean isFirst;
 
         public Builder line(Line line) {
             this.line = line;
@@ -130,11 +128,6 @@ public class Section {
 
         public Builder distance(Integer distance) {
             this.distance = distance;
-            return this;
-        }
-
-        public Builder isFirst(boolean isFirst) {
-            this.isFirst = isFirst;
             return this;
         }
 

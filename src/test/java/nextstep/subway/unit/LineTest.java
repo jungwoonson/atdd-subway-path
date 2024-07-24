@@ -19,8 +19,8 @@ class LineTest {
     @BeforeEach
     void setUp() {
         신분당선 = 신분당선(강남역, 양재역);
-        강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, true);
-        양재역_교대역 = createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE, false);
+        강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
+        양재역_교대역 = createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE);
     }
 
     @Test

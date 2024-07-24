@@ -29,13 +29,12 @@ public class LineTestFixture {
                 .build();
     }
 
-    public static Section createSection(Line line, Station upStation, Station downStation, int distance, boolean isFirst) {
+    public static Section createSection(Line line, Station upStation, Station downStation, int distance) {
         return Section.builder()
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
-                .isFirst(isFirst)
                 .build();
     }
 

@@ -24,28 +24,29 @@ public class Sections {
 
     private Sections(Section section) {
         sections = new ArrayList<>();
+        section.changeToFirst();
         sections.add(section);
     }
 
     private Sections(Section ...section) {
         sections = new ArrayList<>(Arrays.asList(section));
+        sections.get(0).changeToFirst();
     }
 
     public static Sections of(Line line, Station upStation, Station downStation, Integer distance) {
-        return new Sections(createFirstSection(line, upStation, downStation, distance));
+        return new Sections(createSection(line, upStation, downStation, distance));
     }
 
     public static Sections of(Section ...section) {
         return new Sections(section);
     }
 
-    private static Section createFirstSection(Line line, Station upStation, Station downStation, Integer distance) {
+    private static Section createSection(Line line, Station upStation, Station downStation, Integer distance) {
         return Section.builder()
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
-                .isFirst(true)
                 .build();
     }
 

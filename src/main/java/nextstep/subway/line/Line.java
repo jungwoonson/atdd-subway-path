@@ -36,16 +36,15 @@ public class Line {
     }
 
     public void registerSection(Station upStation, Station downStation, Integer distance) {
-        sections.add(createNotFirstStation(this, upStation, downStation, distance));
+        sections.add(createStation(this, upStation, downStation, distance));
     }
 
-    private static Section createNotFirstStation(Line line, Station upStation, Station downStation, Integer distance) {
+    private static Section createStation(Line line, Station upStation, Station downStation, Integer distance) {
         return Section.builder()
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
-                .isFirst(false)
                 .build();
     }
 
