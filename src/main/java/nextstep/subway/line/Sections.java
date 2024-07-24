@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.exception.DuplicateStationException;
 import nextstep.subway.line.exception.LastOneSectionException;
 import nextstep.subway.line.exception.NotDownStationException;
 import nextstep.subway.station.Station;
@@ -52,17 +53,25 @@ public class Sections {
 
     public void add(Section section) {
         if (findEndSection().sameDownStationAndUpStationOf(section)) {
-            sections.add(section);
+            addEndSection(section);
             return;
         }
         if (findStartSection().sameUpStationAndDownStationOf(section)) {
-            addFirstSection(section);
+            addStartSection(section);
             return;
         }
         addMiddleSection(section);
     }
 
-    private void addFirstSection(Section section) {
+    private void addEndSection(Section section) {
+        validateDuplicate(section.getDownStation());
+
+        sections.add(section);
+    }
+
+    private void addStartSection(Section section) {
+        validateDuplicate(section.getUpStation());
+
         section.changeToFirst();
         sections.add(0, section);
         Section beforeFirstSection = sections.get(1);
@@ -70,8 +79,17 @@ public class Sections {
     }
 
     private void addMiddleSection(Section section) {
+        validateDuplicate(section.getDownStation());
+
         OptionalInt indexOpt = findSameUpStationIndex(section);
         indexOpt.ifPresent(index -> dividedSection(index, section));
+    }
+
+    private void validateDuplicate(Station station) {
+        Stations stations = getStations();
+        if (stations.contains(station)) {
+            throw new DuplicateStationException(station.getName());
+        }
     }
 
     private OptionalInt findSameUpStationIndex(Section section) {
@@ -96,6 +114,10 @@ public class Sections {
 
     public List<Long> getStationIds() {
         return extractStations().getStationIds();
+    }
+
+    private Stations getStations() {
+        return extractStations();
     }
 
     private Stations extractStations() {

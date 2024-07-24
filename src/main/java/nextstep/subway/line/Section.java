@@ -80,6 +80,14 @@ public class Section {
         isFirst = false;
     }
 
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downStation.getName();
+    }
+
     public Long getId() {
         return id;
     }
