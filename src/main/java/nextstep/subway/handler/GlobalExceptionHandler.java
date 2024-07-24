@@ -18,7 +18,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             NotDownStationException.class,
-            LastOneSectionException.class
+            LastOneSectionException.class,
+            DuplicateStationException.class
     })
     public ResponseEntity<String> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
