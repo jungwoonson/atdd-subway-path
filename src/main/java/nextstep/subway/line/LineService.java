@@ -54,11 +54,11 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse registerSections(Long id, SectionRequest sectionRequest) {
+    public LineResponse addSections(Long id, SectionRequest sectionRequest) {
         Station upStation = findStationBy(sectionRequest.getUpStationId());
         Station downStation = findStationBy(sectionRequest.getDownStationId());
         Line line = findLineBy(id);
-        line.registerSection(upStation, downStation, sectionRequest.getDistance());
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
         return createLineResponse(lineRepository.save(line));
     }
 

@@ -35,7 +35,7 @@ public class Line {
         this.color = color;
     }
 
-    public void registerSection(Station upStation, Station downStation, Integer distance) {
+    public void addSection(Station upStation, Station downStation, Integer distance) {
         sections.add(createStation(this, upStation, downStation, distance));
     }
 

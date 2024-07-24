@@ -138,15 +138,15 @@ public class LineAcceptanceTest {
      * When: 구간을 추가하면,
      * Then: 노선 조회시 구간이 등록되어있다.
      */
-    @DisplayName("노선에 새로운 구간을 등록한다.")
+    @DisplayName("노선에 새로운 구간을 추가한다.")
     @ParameterizedTest
     @MethodSource("addSectionParameters")
-    void registerSectionTest(Map<String, Object> lineParams, Map<String, Object> sectionParams, List<Long> expectedStationIds) {
+    void addSectionTest(Map<String, Object> lineParams, Map<String, Object> sectionParams, List<Long> expectedStationIds) {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(lineParams);
 
         // when
-        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), sectionParams);
+        ExtractableResponse<Response> response = addSection(findId(createdLineResponse), sectionParams);
 
         // then
         assertResponseCode(response, HttpStatus.CREATED);
@@ -170,7 +170,7 @@ public class LineAcceptanceTest {
     @Test
     void notExistLineExceptionTest() {
         // when
-        ExtractableResponse<Response> response = registerSection(1L, 홍대역_강남역_구간_PARAM);
+        ExtractableResponse<Response> response = addSection(1L, 홍대역_강남역_구간_PARAM);
 
         // then
         assertResponseCode(response, HttpStatus.NOT_FOUND);
@@ -188,7 +188,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 홍대역_서초역_구간_PARAM);
+        ExtractableResponse<Response> response = addSection(findId(createdLineResponse), 홍대역_서초역_구간_PARAM);
 
         // then
         assertResponseCode(response, HttpStatus.NOT_FOUND);
@@ -204,7 +204,7 @@ public class LineAcceptanceTest {
     void deleteSectionTest() {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-        registerSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+        addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
 
         // when
         ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 강남역_ID);
@@ -225,7 +225,7 @@ public class LineAcceptanceTest {
     void deleteNotDownStationExceptionTest() {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-        registerSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+        addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
 
         // when
         ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 홍대역_ID);
@@ -291,7 +291,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> registerSection(Long id, Map<String, Object> params) {
+    private ExtractableResponse<Response> addSection(Long id, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

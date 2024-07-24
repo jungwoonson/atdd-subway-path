@@ -35,7 +35,7 @@ public class LineServiceTest {
         Line line = lineRepository.save(신분당선(강남역, 양재역));
 
         // when
-        LineResponse lineResponse = lineService.registerSections(line.getId(), createSectionRequest(양재역.getId(), 교대역.getId()));
+        LineResponse lineResponse = lineService.addSections(line.getId(), createSectionRequest(양재역.getId(), 교대역.getId()));
 
         // then
         assertThat(lineResponse.getStations()).isEqualTo(createStationResponse(강남역, 양재역, 교대역));

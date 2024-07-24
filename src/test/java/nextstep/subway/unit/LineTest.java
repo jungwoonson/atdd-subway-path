@@ -30,7 +30,7 @@ class LineTest {
         Sections expected = Sections.of(강남역_양재역, 양재역_교대역);
 
         // when
-        신분당선.registerSection(양재역, 교대역, DEFAULT_DISTANCE);
+        신분당선.addSection(양재역, 교대역, DEFAULT_DISTANCE);
 
         // then
         assertThat(신분당선.getSections()).isEqualTo(expected);
@@ -54,7 +54,7 @@ class LineTest {
     void removeSection() {
         // given
         Sections expected = Sections.of(강남역_양재역);
-        신분당선.registerSection(양재역, 교대역, DEFAULT_DISTANCE);
+        신분당선.addSection(양재역, 교대역, DEFAULT_DISTANCE);
 
         // when
         신분당선.deleteSection(교대역);
