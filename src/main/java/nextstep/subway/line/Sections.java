@@ -103,6 +103,19 @@ public class Sections {
         sections.add(dividedSection);
     }
 
+    private List<Section> getSortedSections() {
+        List<Section> sortedSections = new ArrayList<>();
+        Section currentSection = findStartSection();
+
+        sortedSections.add(currentSection);
+        while (sections.size() > sortedSections.size()) {
+            currentSection = findNextSection(currentSection);
+            sortedSections.add(currentSection);
+        }
+
+        return sortedSections;
+    }
+
     public List<Long> getSortedStationIds() {
         return extractSortedStations().getStationIds();
     }
@@ -128,16 +141,13 @@ public class Sections {
     }
 
     private Section findEndSection() {
-        Stations stations = getSortedStations();
-        return sections.stream()
-                .filter(section -> section.sameDownStation(stations.getEndStation()))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+        List<Section> sortedSections = getSortedSections();
+        return sortedSections.get(sortedSections.size() - 1);
     }
 
     private void appendStations(Stations stations, Section section) {
-        Station lastStation = stations.getEndStation();
-        if (lastStation.equals(section.getUpStation())) {
+        Station endStation = stations.getEndStation();
+        if (endStation.equals(section.getUpStation())) {
             stations.add(section.getDownStation());
         }
     }
@@ -180,27 +190,16 @@ public class Sections {
                 .orElseThrow(RuntimeException::new);
     }
 
-    private List<Section> getSortedSection() {
-        List<Section> sortedSections = new ArrayList<>();
-        Section targetSection = findStartSection();
-        sortedSections.add(targetSection);
-        while (sections.size() > sortedSections.size()) {
-            targetSection = findNextSection(targetSection);
-            sortedSections.add(targetSection);
-        }
-        return sortedSections;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sections sections1 = (Sections) o;
-        return Objects.equals(getSortedSection(), sections1.getSortedSection());
+        return Objects.equals(getSortedSections(), sections1.getSortedSections());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSortedSection());
+        return Objects.hash(getSortedSections());
     }
 }
