@@ -56,10 +56,6 @@ public class Section {
                 .build();
     }
 
-    public boolean isDownStation(Station station) {
-        return downStation.equals(station);
-    }
-
     public boolean sameUpStation(Section station) {
         return upStation.equals(station.upStation);
     }

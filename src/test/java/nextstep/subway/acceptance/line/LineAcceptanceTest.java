@@ -216,25 +216,6 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * Given: 특정 노선에 구간이 2개 이상 등록되어 있고,
-     * When: 노선의 하행역이 아닌 역을 제거하면,
-     * Then: 오류를 응답한다.
-     */
-    @DisplayName("지하철 노선에 등록된 하행 종점역이 아닌 구간을 제거하려 하면 오류가 발생한다.")
-    @Test
-    void deleteNotDownStationExceptionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-        addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 홍대역_ID);
-
-        // then
-        assertResponseCode(response, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
      * Given: 특정 노선에 구간이 1개 등록되어 있고,
      * When: 노선의 하행역 구간을 제거하면,
      * Then: 오류를 응답한다.
