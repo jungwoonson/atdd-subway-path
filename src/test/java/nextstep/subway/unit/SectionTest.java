@@ -64,12 +64,49 @@ public class SectionTest {
 
     @Test
     @DisplayName("현재 구간의 하행역과 주어진 구간의 상행역이 같은지 확인한다.")
-    void isSameUpStationTest() {
+    void sameDownStationAndUpStationOfNewSectionTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, true);
         Section 양재역_교대역 = createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE, false);
 
         // when & then
         assertThat(강남역_양재역.sameDownStationAndUpStationOf(양재역_교대역)).isTrue();
+    }
+
+    @Test
+    @DisplayName("현재 구간의 상행역과 주어진 구간의 하행역이 같은지 확인한다.")
+    void sameUpStationAndDownStationOfNewSectionTest() {
+        // given
+        Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, true);
+        Section 양재역_교대역 = createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE, false);
+
+        // when & then
+        assertThat(양재역_교대역.sameUpStationAndDownStationOf(강남역_양재역)).isTrue();
+    }
+
+    @Test
+    @DisplayName("구간의 첫 번째를 판단하는 상태 값을 true로 바꾼다.")
+    void changeToFirstTest() {
+        // given
+        Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, false);
+
+        // when
+        강남역_양재역.changeToFirst();
+
+        // then
+        assertThat(강남역_양재역.isFirst()).isTrue();
+    }
+
+    @Test
+    @DisplayName("구간의 첫 번째를 판단하는 상태 값을 false로 바꾼다.")
+    void changeToNotFirstTest() {
+        // given
+        Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, false);
+
+        // when
+        강남역_양재역.changeToNotFirst();
+
+        // then
+        assertThat(강남역_양재역.isFirst()).isFalse();
     }
 }

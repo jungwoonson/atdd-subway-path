@@ -50,8 +50,15 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (findLastSection().sameDownStationAndUpStationOf(section)) {
+        if (findEndSection().sameDownStationAndUpStationOf(section)) {
             sections.add(section);
+            return;
+        }
+        if (findStartSection().sameUpStationAndDownStationOf(section)) {
+            section.changeToFirst();
+            sections.add(0, section);
+            Section beforeFirstSection = sections.get(1);
+            beforeFirstSection.changeToNotFirst();
             return;
         }
         addMiddleSection(section);
@@ -74,8 +81,12 @@ public class Sections {
         sections.add(index + 1, dividedSection);
     }
 
-    private Section findLastSection() {
+    private Section findEndSection() {
         return sections.get(sections.size() - 1);
+    }
+
+    private Section findStartSection() {
+        return sections.get(0);
     }
 
     public List<Long> getStationIds() {
@@ -109,7 +120,7 @@ public class Sections {
         if (hasLastOneSection()) {
             throw new LastOneSectionException();
         }
-        Section lastSection = findLastSection();
+        Section lastSection = findEndSection();
         if (!lastSection.isDownStation(station)) {
             throw new NotDownStationException();
         }

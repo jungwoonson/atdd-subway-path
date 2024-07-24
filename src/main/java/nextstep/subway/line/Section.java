@@ -65,8 +65,21 @@ public class Section {
         return upStation.equals(station.upStation);
     }
 
-    public boolean sameDownStationAndUpStationOf(Section station) {
-        return downStation.equals(station.upStation);
+    public boolean sameDownStationAndUpStationOf(Section section) {
+        return downStation.equals(section.upStation);
+    }
+
+    public boolean sameUpStationAndDownStationOf(Section section) {
+        return upStation.equals(section.downStation);
+    }
+
+
+    public void changeToFirst() {
+        isFirst = true;
+    }
+
+    public void changeToNotFirst() {
+        isFirst = false;
     }
 
     public Long getId() {

@@ -29,7 +29,7 @@ public class SectionsTest {
 
     @Test
     @DisplayName("마지막 구간을 추가한다.")
-    void addEndSection() {
+    void addEndSectionTest() {
         // given
         Sections expected = Sections.of(강남역_양재역, 양재역_교대역);
 
@@ -42,7 +42,7 @@ public class SectionsTest {
 
     @Test
     @DisplayName("가운데 구간을 추가한다.")
-    void addMiddleSection() {
+    void addMiddleSectionTest() {
         // given
         Sections sections = Sections.of(강남역_양재역);
 
@@ -51,5 +51,18 @@ public class SectionsTest {
 
         // then
         assertThat(sections).isEqualTo(Sections.of(강남역_홍대역, 홍대역_양재역));
+    }
+
+    @Test
+    @DisplayName("처음에 구간을 추가한다.")
+    void addStartSectionTest() {
+        // given
+        Sections sections = Sections.of(양재역_교대역);
+
+        // when
+        sections.add(강남역_양재역);
+
+        // then
+        assertThat(sections).isEqualTo(Sections.of(강남역_양재역, 양재역_교대역));
     }
 }

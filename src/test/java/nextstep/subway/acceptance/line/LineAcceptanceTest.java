@@ -149,13 +149,12 @@ public class LineAcceptanceTest {
         assertThat(stationsIds).containsExactly(분당역_ID, 홍대역_ID, 강남역_ID);
     }
 
-
     /**
      * Given: 특정 노선에 A-C 구간이 등록되어 있고,
      * When: A-C 사이에  A-B 구간을 추가하면,
      * Then: 노선 조회 시 A-B-C 구간이 등록되어있다.
      */
-    @DisplayName("노선의 구간 중간에 구간을 등록한다.")
+    @DisplayName("노선의 구간 가운데 구간을 등록한다.")
     @Test
     void registerMiddleSectionTest() {
         // given
@@ -168,6 +167,26 @@ public class LineAcceptanceTest {
         assertResponseCode(response, HttpStatus.CREATED);
         List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
         assertThat(stationsIds).containsExactly(분당역_ID, 성수역_ID, 홍대역_ID);
+    }
+
+    /**
+     * Given: 특정 노선에 B-C 구간이 등록되어 있고,
+     * When:  A-B 처음에 구간을 추가하면,
+     * Then: 노선 조회 시 A-B-C 구간이 등록되어있다.
+     */
+    @DisplayName("노선의 구간 처음에 구간을 등록한다.")
+    @Test
+    void registerStartSectionTest() {
+        // given
+        ExtractableResponse<Response> createdLineResponse = createLine(분당선_PARAM);
+
+        // when
+        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 홍대역_분당역_구간_PARAM);
+
+        // then
+        assertResponseCode(response, HttpStatus.CREATED);
+        List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
+        assertThat(stationsIds).containsExactly(홍대역_ID, 분당역_ID, 강남역_ID);
     }
 
     /**
