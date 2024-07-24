@@ -29,7 +29,7 @@ public class Sections {
         sections.add(section);
     }
 
-    private Sections(Section ...section) {
+    private Sections(Section... section) {
         sections = new ArrayList<>(Arrays.asList(section));
         sections.get(0).changeToFirst();
     }
@@ -38,7 +38,7 @@ public class Sections {
         return new Sections(createSection(line, upStation, downStation, distance));
     }
 
-    public static Sections of(Section ...section) {
+    public static Sections of(Section... section) {
         return new Sections(section);
     }
 
@@ -156,10 +156,6 @@ public class Sections {
 
     private boolean hasLastOneSection() {
         return sections.size() == 1;
-    }
-
-    public boolean isEmpty() {
-        return sections.isEmpty();
     }
 
     @Override
