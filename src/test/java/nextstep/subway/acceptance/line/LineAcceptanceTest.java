@@ -7,6 +7,9 @@ import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static nextstep.subway.acceptance.line.LineAcceptanceTestFixture.*;
 import static nextstep.subway.utils.AssertUtil.assertResponseCode;
@@ -130,63 +134,32 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * Given: 특정 노선에 A-B 구간이 등록되어 있고,
-     * When: A-B 뒤에 B-C 구간을 추가하면,
-     * Then: 노선 조회 시 A-B-C 구간이 등록되어있다.
+     * Given: 특정 구간이 등록되어 있고,
+     * When: 구간을 추가하면,
+     * Then: 노선 조회시 구간이 등록되어있다.
      */
-    @DisplayName("노선의 구간 가장 뒤쪽에 구간을 등록한다.")
-    @Test
-    void registerEndSectionTest() {
+    @DisplayName("노선에 새로운 구간을 등록한다.")
+    @ParameterizedTest
+    @MethodSource("addSectionParameters")
+    void registerSectionTest(Map<String, Object> lineParams, Map<String, Object> sectionParams, List<Long> expectedStationIds) {
         // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
+        ExtractableResponse<Response> createdLineResponse = createLine(lineParams);
 
         // when
-        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), sectionParams);
 
         // then
         assertResponseCode(response, HttpStatus.CREATED);
         List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationsIds).containsExactly(분당역_ID, 홍대역_ID, 강남역_ID);
+        assertThat(stationsIds).isEqualTo(expectedStationIds);
     }
 
-    /**
-     * Given: 특정 노선에 A-C 구간이 등록되어 있고,
-     * When: A-C 사이에  A-B 구간을 추가하면,
-     * Then: 노선 조회 시 A-B-C 구간이 등록되어있다.
-     */
-    @DisplayName("노선의 구간 가운데 구간을 등록한다.")
-    @Test
-    void registerMiddleSectionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 분당역_성수역_구간_PARAM);
-
-        // then
-        assertResponseCode(response, HttpStatus.CREATED);
-        List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationsIds).containsExactly(분당역_ID, 성수역_ID, 홍대역_ID);
-    }
-
-    /**
-     * Given: 특정 노선에 B-C 구간이 등록되어 있고,
-     * When:  A-B 처음에 구간을 추가하면,
-     * Then: 노선 조회 시 A-B-C 구간이 등록되어있다.
-     */
-    @DisplayName("노선의 구간 처음에 구간을 등록한다.")
-    @Test
-    void registerStartSectionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(분당선_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = registerSection(findId(createdLineResponse), 홍대역_분당역_구간_PARAM);
-
-        // then
-        assertResponseCode(response, HttpStatus.CREATED);
-        List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationsIds).containsExactly(홍대역_ID, 분당역_ID, 강남역_ID);
+    private static Stream<Arguments> addSectionParameters() {
+        return Stream.of(
+            Arguments.of(신분당선_PARAM, 홍대역_강남역_구간_PARAM, List.of(분당역_ID, 홍대역_ID, 강남역_ID)),
+            Arguments.of(분당선_PARAM, 홍대역_분당역_구간_PARAM, List.of(홍대역_ID, 분당역_ID, 강남역_ID)),
+            Arguments.of(신분당선_PARAM, 분당역_성수역_구간_PARAM, List.of(분당역_ID, 성수역_ID, 홍대역_ID))
+        );
     }
 
     /**

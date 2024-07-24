@@ -3,66 +3,55 @@ package nextstep.subway.unit;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.Sections;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static nextstep.subway.unit.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionsTest {
 
-    private Line 신분당선;
-    private Section 강남역_양재역;
-    private Section 양재역_교대역;
-    private Section 강남역_홍대역;
-    private Section 홍대역_양재역;
+    private static Line 신분당선 = 신분당선(강남역, 양재역);
 
-    @BeforeEach
-    void setUp() {
-        신분당선 = 신분당선(강남역, 양재역);
-        강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, true);
-        양재역_교대역 = createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE, false);
-        강남역_홍대역 = createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE,  true);
-        홍대역_양재역 = createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE, false);
-    }
-
-    @Test
-    @DisplayName("마지막 구간을 추가한다.")
-    void addEndSectionTest() {
+    @DisplayName("처음, 가운데, 마지막 구간을 추가한다.")
+    @ParameterizedTest
+    @MethodSource("addSectionParameters")
+    void addSectionTest(Section section, Section newSection, Sections expected) {
         // given
-        Sections expected = Sections.of(강남역_양재역, 양재역_교대역);
+        Sections sections = Sections.of(section);
 
         // when
-        신분당선.registerSection(양재역, 교대역, DEFAULT_DISTANCE);
+        sections.add(newSection);
 
         // then
-        assertThat(신분당선.getSections()).isEqualTo(expected);
+        assertThat(sections).isEqualTo(expected);
     }
 
-    @Test
-    @DisplayName("가운데 구간을 추가한다.")
-    void addMiddleSectionTest() {
-        // given
-        Sections sections = Sections.of(강남역_양재역);
-
-        // when
-        sections.add(강남역_홍대역);
-
-        // then
-        assertThat(sections).isEqualTo(Sections.of(강남역_홍대역, 홍대역_양재역));
+    private static Stream<Arguments> addSectionParameters() {
+        return Stream.of(
+                Arguments.of(양재역_교대역(), 강남역_양재역(), Sections.of(강남역_양재역(), 양재역_교대역())),
+                Arguments.of(강남역_양재역(), 강남역_홍대역(), Sections.of(강남역_홍대역(), 홍대역_양재역())),
+                Arguments.of(양재역_교대역(), 강남역_양재역(), Sections.of(강남역_양재역(), 양재역_교대역()))
+        );
     }
 
-    @Test
-    @DisplayName("처음에 구간을 추가한다.")
-    void addStartSectionTest() {
-        // given
-        Sections sections = Sections.of(양재역_교대역);
+    private static Section 양재역_교대역() {
+        return createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE, false);
+    }
 
-        // when
-        sections.add(강남역_양재역);
+    private static Section 강남역_양재역() {
+        return createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE, true);
+    }
 
-        // then
-        assertThat(sections).isEqualTo(Sections.of(강남역_양재역, 양재역_교대역));
+    private static Section 강남역_홍대역() {
+        return createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE, true);
+    }
+
+    private static Section 홍대역_양재역() {
+        return createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE, false);
     }
 }
