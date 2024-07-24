@@ -73,7 +73,6 @@ public class Section {
         return upStation.equals(section.downStation);
     }
 
-
     public void changeToFirst() {
         isFirst = true;
     }

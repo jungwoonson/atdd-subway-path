@@ -55,13 +55,17 @@ public class Sections {
             return;
         }
         if (findStartSection().sameUpStationAndDownStationOf(section)) {
-            section.changeToFirst();
-            sections.add(0, section);
-            Section beforeFirstSection = sections.get(1);
-            beforeFirstSection.changeToNotFirst();
+            addFirstSection(section);
             return;
         }
         addMiddleSection(section);
+    }
+
+    private void addFirstSection(Section section) {
+        section.changeToFirst();
+        sections.add(0, section);
+        Section beforeFirstSection = sections.get(1);
+        beforeFirstSection.changeToNotFirst();
     }
 
     private void addMiddleSection(Section section) {

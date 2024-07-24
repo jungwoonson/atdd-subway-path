@@ -31,10 +31,6 @@ public class Stations {
                 .collect(Collectors.toList());
     }
 
-    public boolean existStation(Station station) {
-        return stations.contains(station);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
