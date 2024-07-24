@@ -219,7 +219,7 @@ public class LineAcceptanceTest {
     private static Stream<Arguments> deleteSectionParameters() {
         return Stream.of(
                 Arguments.of(분당역_ID, List.of(홍대역_ID, 강남역_ID)),
-                Arguments.of(홍대역_ID, List.of(홍대역_ID, 강남역_ID)),
+                Arguments.of(홍대역_ID, List.of(분당역_ID, 강남역_ID)),
                 Arguments.of(강남역_ID, List.of(분당역_ID, 홍대역_ID))
         );
     }

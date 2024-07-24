@@ -21,7 +21,7 @@ public class Stations {
         stations.add(station);
     }
 
-    public Station lastStation() {
+    public Station getEndStation() {
         return stations.get(stations.size() - 1);
     }
 

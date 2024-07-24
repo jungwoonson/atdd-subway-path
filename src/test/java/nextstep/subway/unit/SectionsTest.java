@@ -4,6 +4,7 @@ import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.Sections;
 import nextstep.subway.line.exception.DuplicateStationException;
+import nextstep.subway.station.Station;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +35,14 @@ public class SectionsTest {
         assertThat(sections).isEqualTo(expected);
     }
 
+    private static Stream<Arguments> addSectionParameters() {
+        return Stream.of(
+                Arguments.of(양재역_교대역(), 강남역_양재역(), Sections.of(강남역_양재역(), 양재역_교대역())),
+                Arguments.of(강남역_양재역(), 강남역_홍대역(), Sections.of(강남역_홍대역(), 홍대역_양재역())),
+                Arguments.of(양재역_교대역(), 강남역_양재역(), Sections.of(강남역_양재역(), 양재역_교대역()))
+        );
+    }
+
     @DisplayName("중복된 구간을 추가하면 오류가 발생한다.")
     @ParameterizedTest
     @MethodSource("duplicateStationParameters")
@@ -46,19 +55,33 @@ public class SectionsTest {
                 .message().contains(expectedDuplicated);
     }
 
-    private static Stream<Arguments> addSectionParameters() {
-        return Stream.of(
-                Arguments.of(양재역_교대역(), 강남역_양재역(), Sections.of(강남역_양재역(), 양재역_교대역())),
-                Arguments.of(강남역_양재역(), 강남역_홍대역(), Sections.of(강남역_홍대역(), 홍대역_양재역())),
-                Arguments.of(양재역_교대역(), 강남역_양재역(), Sections.of(강남역_양재역(), 양재역_교대역()))
-        );
-    }
-
     private static Stream<Arguments> duplicateStationParameters() {
         return Stream.of(
                 Arguments.of(Sections.of(강남역_양재역(), 양재역_교대역()), 양재역_강남역(), 양재역.getName()),
                 Arguments.of(Sections.of(강남역_양재역(), 양재역_교대역()), 강남역_양재역(), 양재역.getName()),
                 Arguments.of(Sections.of(강남역_양재역(), 양재역_교대역()), 교대역_양재역(), 양재역.getName())
+        );
+    }
+
+    @DisplayName("처음, 가운데, 마지막 구간을 제거한다.")
+    @ParameterizedTest
+    @MethodSource("deleteSectionParameters")
+    void deleteSectionTest(Station station, Sections expected) {
+        // given
+        Sections sections = Sections.of(강남역_양재역(), 양재역_교대역());
+
+        // when
+        sections.delete(station);
+
+        // then
+        assertThat(sections).isEqualTo(expected);
+    }
+
+    private static Stream<Arguments> deleteSectionParameters() {
+        return Stream.of(
+                Arguments.of(강남역, Sections.of(양재역_교대역())),
+                Arguments.of(양재역, Sections.of(강남역_교대역())),
+                Arguments.of(교대역, Sections.of(강남역_양재역()))
         );
     }
 
@@ -84,5 +107,9 @@ public class SectionsTest {
 
     private static Section 교대역_양재역() {
         return createSection(신분당선, 교대역, 양재역, DEFAULT_DISTANCE);
+    }
+
+    private static Section 강남역_교대역() {
+        return createSection(신분당선, 강남역, 교대역, DEFAULT_DISTANCE);
     }
 }

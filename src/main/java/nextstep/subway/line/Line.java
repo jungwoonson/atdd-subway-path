@@ -53,7 +53,7 @@ public class Line {
     }
 
     public List<Long> getStationIds() {
-        return sections.getStationIds();
+        return sections.getSortedStationIds();
     }
 
     public Long getId() {

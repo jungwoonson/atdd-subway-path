@@ -38,6 +38,21 @@ public class SectionTest {
     }
 
     @Test
+    @DisplayName("현재 구간의 상행 역과 주어진 구간의 하행역이 연결된다.")
+    void mergeSectionTest() {
+        // given
+        Section frontSection = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
+        Section backSection = createSection(신분당선, 양재역, 홍대역, DEFAULT_DISTANCE);
+        Section 강남역_홍대역 = createSection(신분당선, 강남역, 홍대역, DEFAULT_DISTANCE + DEFAULT_DISTANCE);
+
+        // when
+        frontSection.mergeSection(backSection);
+
+        // then
+        assertThat(frontSection).isEqualTo(강남역_홍대역);
+    }
+
+    @Test
     @DisplayName("구간 분리 시 새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외를 발생시킨다.")
     void GraterOrEqualExistingDistanceExceptionTest() {
         // given
@@ -52,7 +67,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("두 구간의 상행역이 같은지 확인한다.")
+    @DisplayName("두 구간의 상행 역이 같은지 확인한다.")
     void sameUpStationTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
@@ -60,6 +75,26 @@ public class SectionTest {
 
         // when & then
         assertThat(강남역_양재역.sameUpStation(강남역_홍대역)).isTrue();
+    }
+
+    @Test
+    @DisplayName("주어진 역과 상행 역이 같은지 확인한다.")
+    void sameUpStationByStationTest() {
+        // given
+        Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
+
+        // when & then
+        assertThat(강남역_양재역.sameUpStation(강남역)).isTrue();
+    }
+
+    @Test
+    @DisplayName("주어진 역과 하행 역이 같은지 확인한다.")
+    void sameDownStationByStationTest() {
+        // given
+        Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
+
+        // when & then
+        assertThat(강남역_양재역.sameDownStation(양재역)).isTrue();
     }
 
     @Test

@@ -71,10 +71,10 @@ public class Sections {
     private void addStartSection(Section section) {
         validateDuplicate(section.getUpStation());
 
+        Section beforeStartSection = findStartSection();
+        beforeStartSection.changeToNotFirst();
         section.changeToFirst();
-        sections.add(0, section);
-        Section beforeFirstSection = sections.get(1);
-        beforeFirstSection.changeToNotFirst();
+        sections.add(section);
     }
 
     private void addMiddleSection(Section section) {
@@ -85,7 +85,7 @@ public class Sections {
     }
 
     private void validateDuplicate(Station station) {
-        Stations stations = getStations();
+        Stations stations = getSortedStations();
         if (stations.contains(station)) {
             throw new DuplicateStationException(station.getName());
         }
@@ -100,27 +100,19 @@ public class Sections {
     private void dividedSection(int index, Section newSection) {
         Section existingSection = sections.get(index);
         Section dividedSection = existingSection.dividedSection(newSection);
-        sections.add(index + 1, dividedSection);
+        sections.add(dividedSection);
     }
 
-    private Section findEndSection() {
-        return sections.get(sections.size() - 1);
+    public List<Long> getSortedStationIds() {
+        return extractSortedStations().getStationIds();
     }
 
-    private Section findStartSection() {
-        return sections.get(0);
+    private Stations getSortedStations() {
+        return extractSortedStations();
     }
 
-    public List<Long> getStationIds() {
-        return extractStations().getStationIds();
-    }
-
-    private Stations getStations() {
-        return extractStations();
-    }
-
-    private Stations extractStations() {
-        Section firstSection = findFirstSection();
+    private Stations extractSortedStations() {
+        Section firstSection = findStartSection();
         Stations stations = Stations.of(firstSection.getUpStation(), firstSection.getDownStation());
         for (Section section : sections) {
             appendStations(stations, section);
@@ -128,15 +120,23 @@ public class Sections {
         return stations;
     }
 
-    private Section findFirstSection() {
+    private Section findStartSection() {
         return sections.stream()
                 .filter(Section::isFirst)
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
+    private Section findEndSection() {
+        Stations stations = getSortedStations();
+        return sections.stream()
+                .filter(section -> section.sameDownStation(stations.getEndStation()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
     private void appendStations(Stations stations, Section section) {
-        Station lastStation = stations.lastStation();
+        Station lastStation = stations.getEndStation();
         if (lastStation.equals(section.getUpStation())) {
             stations.add(section.getDownStation());
         }
@@ -146,12 +146,38 @@ public class Sections {
         if (hasLastOneSection()) {
             throw new LastOneSectionException();
         }
-        Section lastSection = findEndSection();
-        sections.remove(lastSection);
+        if (findStartSection().sameUpStation(station)) {
+            Section nextSection = findNextSection(findStartSection());
+            nextSection.changeToFirst();
+            sections.remove(findStartSection());
+            return;
+        }
+        if (findEndSection().sameDownStation(station)) {
+            sections.remove(findEndSection());
+            return;
+        }
+        Section frontSection = findHasDownStationSection(station);
+        Section backSection = findNextSection(frontSection);
+        frontSection.mergeSection(backSection);
+        sections.remove(backSection);
     }
 
     private boolean hasLastOneSection() {
         return sections.size() == 1;
+    }
+
+    private Section findNextSection(Section section) {
+        return sections.stream()
+                .filter(it -> it.sameUpStation(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private Section findHasDownStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.sameDownStation(station))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     @Override
@@ -159,11 +185,11 @@ public class Sections {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sections sections1 = (Sections) o;
-        return Objects.equals(sections, sections1.sections);
+        return Objects.equals(getSortedStations(), sections1.getSortedStations());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sections);
+        return Objects.hash(getSortedStations());
     }
 }
