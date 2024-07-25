@@ -36,18 +36,13 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, Integer distance) {
-        sections.add(createStation(this, upStation, downStation, distance));
-    }
-
-    private static Section createStation(Line line, Station upStation, Station downStation, Integer distance) {
-        return Section.builder()
-                .line(line)
+        sections.add(Section.builder()
+                .line(this)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
-                .build();
+                .build());
     }
-
     public void deleteSection(Station station) {
         sections.delete(station);
     }

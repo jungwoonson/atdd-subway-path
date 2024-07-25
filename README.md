@@ -42,8 +42,8 @@
 - ### 2단계 - 구간 제거 요구사항 반영
 - 이전 미션 리뷰어 피드백 반영
   - [x] 상수명 네이밍 컨벤션 지키기
-  - [ ] createStation() 메서드 명 createSection() 으로 수정
-  - [ ] 빌더 패턴으 장점을 살리지 못하는 createSection() 수정
+  - [x] ~~createStation() 메서드 명 createSection() 으로 수정~~
+  - [x] 빌더 패턴으 장점을 살리지 못하는 createSection() 수정
   - [ ] if 문에서 '{}' 생략 된 부분 다시 추가
   - [ ] Sections of(Section... section) 가변인수 사용하는 부분 개선
   - [ ] 구간 생성 분기 조건 부분 메서드 추출로 가독성 높이기
