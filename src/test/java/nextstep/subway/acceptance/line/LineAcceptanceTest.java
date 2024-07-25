@@ -139,23 +139,28 @@ public class LineAcceptanceTest {
      * Then: 노선 조회시 구간이 등록되어있다.
      */
     @DisplayName("노선에 새로운 구간을 추가한다.")
-    @ParameterizedTest
-    @MethodSource("addSectionParameters")
-    void addSectionTest(Map<String, Object> lineParams, Map<String, Object> sectionParams, List<Long> expectedStationIds) {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(lineParams);
+    @Test
+    void addSectionTest() {
+        List<Arguments> fixtures = addSectionFixtures();
 
-        // when
-        ExtractableResponse<Response> response = addSection(findId(createdLineResponse), sectionParams);
+        for (Arguments arguments : fixtures){
+            // given
+            ExtractableResponse<Response> createdLineResponse = createLine((Map<String, Object>) arguments.get()[0]);
+            Map<String, Object> sectionParams = (Map<String, Object>) arguments.get()[1];
+            List<Long> expectedStationIds = (List<Long>) arguments.get()[2];
 
-        // then
-        assertResponseCode(response, HttpStatus.CREATED);
-        List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationsIds).isEqualTo(expectedStationIds);
+            // when
+            ExtractableResponse<Response> response = addSection(findId(createdLineResponse), sectionParams);
+
+            // then
+            assertResponseCode(response, HttpStatus.CREATED);
+            List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
+            assertThat(stationsIds).isEqualTo(expectedStationIds);
+        }
     }
 
-    private static Stream<Arguments> addSectionParameters() {
-        return Stream.of(
+    private List<Arguments> addSectionFixtures() {
+        return List.of(
             Arguments.of(신분당선_PARAM, 홍대역_강남역_구간_PARAM, List.of(분당역_ID, 홍대역_ID, 강남역_ID)),
             Arguments.of(분당선_PARAM, 홍대역_분당역_구간_PARAM, List.of(홍대역_ID, 분당역_ID, 강남역_ID)),
             Arguments.of(신분당선_PARAM, 분당역_성수역_구간_PARAM, List.of(분당역_ID, 성수역_ID, 홍대역_ID))
@@ -196,42 +201,37 @@ public class LineAcceptanceTest {
 
     /**
      * Given: 특정 노선에 구간이 2개 이상 등록되어 있고,
-     * When: 노선의 하행역을 제거하면,
-     * Then: 노선을 조회했을 때 하행역이 제거된다.
+     * When: 지하철 역의 위치에 상관없이 구간을 제거하면,
+     * Then: 노선을 조회했을 때 구간이 제거된다.
      */
     @DisplayName("지하철 노선에 구간을 제거한다.")
     @Test
     void deleteSectionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-        addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+        List<Arguments> fixtures = deleteSectionFixtures();
 
-        // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 강남역_ID);
+        for (Arguments fixture : fixtures) {
+            // given
+            ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
+            addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+            Long stationId = (Long) fixture.get()[0];
+            List<Long> expectedStationIds = (List<Long>) fixture.get()[1];
 
-        // then
-        assertResponseCode(response, HttpStatus.OK);
-        List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationIds).doesNotContain(강남역_ID);
+            // when
+            ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), stationId);
+
+            // then
+            assertResponseCode(response, HttpStatus.OK);
+            List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
+            assertThat(stationIds).isEqualTo(expectedStationIds);
+        }
     }
 
-    /**
-     * Given: 특정 노선에 구간이 2개 이상 등록되어 있고,
-     * When: 노선의 하행역이 아닌 역을 제거하면,
-     * Then: 오류를 응답한다.
-     */
-    @DisplayName("지하철 노선에 등록된 하행 종점역이 아닌 구간을 제거하려 하면 오류가 발생한다.")
-    @Test
-    void deleteNotDownStationExceptionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-        addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 홍대역_ID);
-
-        // then
-        assertResponseCode(response, HttpStatus.BAD_REQUEST);
+    private static List<Arguments> deleteSectionFixtures() {
+        return List.of(
+                Arguments.of(분당역_ID, List.of(홍대역_ID, 강남역_ID)),
+                Arguments.of(홍대역_ID, List.of(분당역_ID, 강남역_ID)),
+                Arguments.of(강남역_ID, List.of(분당역_ID, 홍대역_ID))
+        );
     }
 
     /**

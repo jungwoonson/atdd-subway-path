@@ -27,7 +27,12 @@ public class Line {
         this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
-        this.sections = Sections.of(this, builder.upStation, builder.downStation, builder.distance);
+        this.sections = Sections.from(Section.builder()
+                .line(this)
+                .upStation(builder.upStation)
+                .downStation(builder.downStation)
+                .distance(builder.distance)
+                .build());
     }
 
     public void modify(String name, String color) {
@@ -36,18 +41,13 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, Integer distance) {
-        sections.add(createStation(this, upStation, downStation, distance));
-    }
-
-    private static Section createStation(Line line, Station upStation, Station downStation, Integer distance) {
-        return Section.builder()
-                .line(line)
+        sections.add(Section.builder()
+                .line(this)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
-                .build();
+                .build());
     }
-
     public void deleteSection(Station station) {
         sections.delete(station);
     }
@@ -121,8 +121,12 @@ public class Line {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Line line = (Line) o;
         return Objects.equals(id, line.id)
                 && Objects.equals(name, line.name)

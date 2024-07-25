@@ -44,6 +44,11 @@ public class Section {
         return dividedSection;
     }
 
+    public void mergeSection(Section section) {
+        downStation = section.downStation;
+        distance += section.getDistance();
+    }
+
     private Section createDividedSection(Section section) {
         if (distance <= section.distance) {
             throw new NotLessThanExistingDistanceException();
@@ -56,16 +61,16 @@ public class Section {
                 .build();
     }
 
-    public boolean isDownStation(Station station) {
-        return downStation.equals(station);
-    }
-
     public boolean sameUpStation(Section station) {
         return upStation.equals(station.upStation);
     }
 
     public boolean sameUpStation(Station station) {
         return upStation.equals(station);
+    }
+
+    public boolean sameDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public boolean sameDownStationAndUpStationOf(Section section) {
@@ -150,8 +155,12 @@ public class Section {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Section section = (Section) o;
         return isFirst == section.isFirst
                 && Objects.equals(line.getId(), section.line.getId())

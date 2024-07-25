@@ -2,7 +2,6 @@ package nextstep.subway.line;
 
 import nextstep.subway.line.exception.DuplicateStationException;
 import nextstep.subway.line.exception.LastOneSectionException;
-import nextstep.subway.line.exception.NotDownStationException;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.Stations;
 
@@ -24,43 +23,41 @@ public class Sections {
     }
 
     private Sections(Section section) {
-        sections = new ArrayList<>();
         section.changeToFirst();
-        sections.add(section);
+        sections = new ArrayList<>(List.of(section));
     }
 
-    private Sections(Section... section) {
-        sections = new ArrayList<>(Arrays.asList(section));
-        sections.get(0).changeToFirst();
+    private Sections(Section startSection, Section secondSection) {
+        startSection.changeToFirst();
+        sections = new ArrayList<>(List.of(startSection, secondSection));
     }
 
-    public static Sections of(Line line, Station upStation, Station downStation, Integer distance) {
-        return new Sections(createSection(line, upStation, downStation, distance));
-    }
-
-    public static Sections of(Section... section) {
+    public static Sections from(Section section) {
         return new Sections(section);
     }
 
-    private static Section createSection(Line line, Station upStation, Station downStation, Integer distance) {
-        return Section.builder()
-                .line(line)
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
-                .build();
+    public static Sections of(Section startSection, Section secondSection) {
+        return new Sections(startSection, secondSection);
     }
 
     public void add(Section section) {
-        if (findEndSection().sameDownStationAndUpStationOf(section)) {
+        if (endSectionAddable(section)) {
             addEndSection(section);
             return;
         }
-        if (findStartSection().sameUpStationAndDownStationOf(section)) {
+        if (startSectionAddable(section)) {
             addStartSection(section);
             return;
         }
         addMiddleSection(section);
+    }
+
+    private boolean endSectionAddable(Section section) {
+        return findEndSection().sameDownStationAndUpStationOf(section);
+    }
+
+    private boolean startSectionAddable(Section section) {
+        return findStartSection().sameUpStationAndDownStationOf(section);
     }
 
     private void addEndSection(Section section) {
@@ -160,11 +157,47 @@ public class Sections {
         if (hasLastOneSection()) {
             throw new LastOneSectionException();
         }
-        Section lastSection = findEndSection();
-        if (!lastSection.isDownStation(station)) {
-            throw new NotDownStationException();
+        if (deleteAbleStartSection(station)) {
+            deleteStartSection();
+            return;
         }
-        sections.remove(lastSection);
+        if (deleteAbleEndSection(station)) {
+            deleteEndSection();
+            return;
+        }
+        deleteMiddleSection(station);
+    }
+
+    private boolean deleteAbleEndSection(Station station) {
+        return findEndSection().sameDownStation(station);
+    }
+
+    private boolean deleteAbleStartSection(Station station) {
+        return findStartSection().sameUpStation(station);
+    }
+
+    private void deleteStartSection() {
+        Section nextSection = findNextSection(findStartSection());
+        nextSection.changeToFirst();
+        sections.remove(findStartSection());
+    }
+
+    private void deleteEndSection() {
+        sections.remove(findEndSection());
+    }
+
+    private void deleteMiddleSection(Station station) {
+        Section frontSection = findSectionWithDownStation(station);
+        Section backSection = findNextSection(frontSection);
+        frontSection.mergeSection(backSection);
+        sections.remove(backSection);
+    }
+
+    private Section findSectionWithDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.sameDownStation(station))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     private boolean hasLastOneSection() {
@@ -173,8 +206,12 @@ public class Sections {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Sections sections1 = (Sections) o;
         return Objects.equals(getSortedSections(), sections1.getSortedSections());
     }
