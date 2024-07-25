@@ -9,8 +9,12 @@ import java.util.Map;
 public class LineAcceptanceTestFixture {
     static final String 신분당선 = "신분당선";
     static final String 분당선 = "분당선";
+    static final String 경희선 = "경희선";
+    static final String 중앙선 = "중앙선";
     static final String RED = "bg-red-600";
     static final String GREEN = "bg-green-600";
+    static final String YELLOW = "bg-yellow-600";
+    static final String BLUE = "bg-blue-600";
     static final String 분당역 = "분당역";
     static final String 홍대역 = "홍대역";
     static final String 강남역 = "강남역";
@@ -36,6 +40,22 @@ public class LineAcceptanceTestFixture {
             "upStationId", 분당역_ID,
             "downStationId", 강남역_ID,
             "distance", 4
+    );
+
+    static final Map<String, Object> 경희선_PARAM = Map.of(
+            "name", 분당선,
+            "color", YELLOW,
+            "upStationId", 강남역_ID,
+            "downStationId", 성수역_ID,
+            "distance", 1
+    );
+
+    static final Map<String, Object> 중앙선_PARAM = Map.of(
+            "name", 분당선,
+            "color", BLUE,
+            "upStationId", 성수역_ID,
+            "downStationId", 홍대역_ID,
+            "distance", 8
     );
 
     static final Map<String, Object> MODIFY_PARAM = Map.of(

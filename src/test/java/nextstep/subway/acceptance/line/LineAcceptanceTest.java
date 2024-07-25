@@ -7,9 +7,7 @@ import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -18,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static nextstep.subway.acceptance.line.LineAcceptanceTestFixture.*;
 import static nextstep.subway.utils.AssertUtil.assertResponseCode;
@@ -252,6 +249,29 @@ public class LineAcceptanceTest {
         assertResponseCode(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Given: 연결된 구간을 가진 노선들이 등록되어있고,
+     * When: 출발역과 도착역을 입력하여 최단거리 경로를 조회하면,
+     * Then: 출발역에서 도착역까지 죄단거리의 경로와 거리의 길이가 조회된다.
+     */
+    @DisplayName("두 지하철 역의 최단거리 경로를 조회한다.")
+    @Test
+    void findShortestPathTest() {
+        // given
+        createLine(신분당선_PARAM);
+        createLine(분당선_PARAM);
+        createLine(경희선_PARAM);
+        createLine(중앙선_PARAM);
+
+        // when
+        ExtractableResponse<Response> response = findShortestPath(분당역_ID, 성수역_ID);
+
+        // then
+        assertResponseCode(response, HttpStatus.OK);
+        assertThat(findStationIds(response)).containsExactly(분당역_ID, 강남역_ID, 성수역_ID);
+        assertThat(findDistance(response)).isEqualTo(5);
+    }
+
     private ExtractableResponse<Response> createLine(Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
@@ -307,9 +327,15 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> findShortestPath(Long source, Long target) {
+        return RestAssured.given().log().all()
+                .when().get(String.format("/paths?source=%d&target=%d", source, target))
+                .then().log().all()
+                .extract();
+    }
+
     private List<Long> lookUpStationIds(Long lindId) {
-        return lookUpLine(lindId).jsonPath()
-                .getList("stations.id", Long.class);
+        return findStationIds(lookUpLine(lindId));
     }
 
     private List<String> findNames(ExtractableResponse<Response> response) {
@@ -318,11 +344,22 @@ public class LineAcceptanceTest {
     }
 
     private static String findName(ExtractableResponse<Response> response) {
-        return response.jsonPath().getString("name");
+        return response.jsonPath()
+                .getString("name");
     }
 
     private static long findId(ExtractableResponse<Response> createdLineResponse) {
         return createdLineResponse.jsonPath()
                 .getLong("id");
+    }
+
+    private static List<Long> findStationIds(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getList("stations.id", Long.class);
+    }
+
+    private static int findDistance(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getInt("distance");
     }
 }
