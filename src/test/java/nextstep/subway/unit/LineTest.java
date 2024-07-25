@@ -40,7 +40,7 @@ class LineTest {
     @DisplayName("구간을 조회한다.")
     void getStations() {
         //given
-        Sections expected = Sections.of(강남역_양재역);
+        Sections expected = Sections.from(강남역_양재역);
 
         // when
         신분당선.getStationIds();
@@ -53,7 +53,7 @@ class LineTest {
     @DisplayName("구간을 제거한다.")
     void removeSection() {
         // given
-        Sections expected = Sections.of(강남역_양재역);
+        Sections expected = Sections.from(강남역_양재역);
         신분당선.addSection(양재역, 교대역, DEFAULT_DISTANCE);
 
         // when

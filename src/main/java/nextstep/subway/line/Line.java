@@ -27,7 +27,12 @@ public class Line {
         this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
-        this.sections = Sections.of(this, builder.upStation, builder.downStation, builder.distance);
+        this.sections = Sections.from(Section.builder()
+                .line(this)
+                .upStation(builder.upStation)
+                .downStation(builder.downStation)
+                .distance(builder.distance)
+                .build());
     }
 
     public void modify(String name, String color) {

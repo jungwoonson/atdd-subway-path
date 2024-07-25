@@ -25,7 +25,7 @@ public class SectionsTest {
     @MethodSource("addSectionParameters")
     void addSectionTest(Section section, Section newSection, Sections expected) {
         // given
-        Sections sections = Sections.of(section);
+        Sections sections = Sections.from(section);
 
         // when
         sections.add(newSection);

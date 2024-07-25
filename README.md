@@ -45,8 +45,9 @@
   - [x] ~~createStation() 메서드 명 createSection() 으로 수정~~
   - [x] 빌더 패턴으 장점을 살리지 못하는 createSection() 수정
   - [x] if 문에서 '{}' 생략 된 부분 추가
-  - [ ] Sections of(Section... section) 가변인수 사용하는 부분 개선
+  - [x] Sections of(Section... section) 가변인수 사용하는 부분 개선
   - [x] 구간 생성 분기 조건 부분 메서드 추출로 가독성 높이기
+  - [ ] @MethodSource 사용으로 인한 오류 테스트 pure function 으로 수정
 - 위치에 상관없이 지하철 노선에 역을 제거 할 수 있다
   - [ ] 마지막만 제거 가능하던 제약조건 삭제
   - [ ] 인수 테스트 작성
