@@ -44,6 +44,11 @@ public class Section {
         return dividedSection;
     }
 
+    public void mergeSection(Section section) {
+        downStation = section.downStation;
+        distance += section.getDistance();
+    }
+
     private Section createDividedSection(Section section) {
         if (distance <= section.distance) {
             throw new NotLessThanExistingDistanceException();
@@ -62,6 +67,10 @@ public class Section {
 
     public boolean sameUpStation(Station station) {
         return upStation.equals(station);
+    }
+
+    public boolean sameDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public boolean sameDownStationAndUpStationOf(Section section) {

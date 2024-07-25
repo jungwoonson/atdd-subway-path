@@ -157,8 +157,47 @@ public class Sections {
         if (hasLastOneSection()) {
             throw new LastOneSectionException();
         }
-        Section lastSection = findEndSection();
-        sections.remove(lastSection);
+        if (deleteAbleStartSection(station)) {
+            deleteStartSection();
+            return;
+        }
+        if (deleteAbleEndSection(station)) {
+            deleteEndSection();
+            return;
+        }
+        deleteMiddleSection(station);
+    }
+
+    private boolean deleteAbleEndSection(Station station) {
+        return findEndSection().sameDownStation(station);
+    }
+
+    private boolean deleteAbleStartSection(Station station) {
+        return findStartSection().sameUpStation(station);
+    }
+
+    private void deleteStartSection() {
+        Section nextSection = findNextSection(findStartSection());
+        nextSection.changeToFirst();
+        sections.remove(findStartSection());
+    }
+
+    private void deleteEndSection() {
+        sections.remove(findEndSection());
+    }
+
+    private void deleteMiddleSection(Station station) {
+        Section frontSection = findSectionWithDownStation(station);
+        Section backSection = findNextSection(frontSection);
+        frontSection.mergeSection(backSection);
+        sections.remove(backSection);
+    }
+
+    private Section findSectionWithDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.sameDownStation(station))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     private boolean hasLastOneSection() {
