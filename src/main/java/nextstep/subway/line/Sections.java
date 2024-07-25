@@ -2,7 +2,6 @@ package nextstep.subway.line;
 
 import nextstep.subway.line.exception.DuplicateStationException;
 import nextstep.subway.line.exception.LastOneSectionException;
-import nextstep.subway.line.exception.NotDownStationException;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.Stations;
 
@@ -159,9 +158,6 @@ public class Sections {
             throw new LastOneSectionException();
         }
         Section lastSection = findEndSection();
-        if (!lastSection.isDownStation(station)) {
-            throw new NotDownStationException();
-        }
         sections.remove(lastSection);
     }
 

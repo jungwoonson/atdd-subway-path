@@ -7,9 +7,7 @@ import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -139,23 +137,28 @@ public class LineAcceptanceTest {
      * Then: 노선 조회시 구간이 등록되어있다.
      */
     @DisplayName("노선에 새로운 구간을 추가한다.")
-    @ParameterizedTest
-    @MethodSource("addSectionParameters")
-    void addSectionTest(Map<String, Object> lineParams, Map<String, Object> sectionParams, List<Long> expectedStationIds) {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(lineParams);
+    @Test
+    void addSectionTest() {
+        List<Arguments> fixtures = addSectionFixtures();
 
-        // when
-        ExtractableResponse<Response> response = addSection(findId(createdLineResponse), sectionParams);
+        for (Arguments arguments : fixtures){
+            // given
+            ExtractableResponse<Response> createdLineResponse = createLine((Map<String, Object>) arguments.get()[0]);
+            Map<String, Object> sectionParams = (Map<String, Object>) arguments.get()[1];
+            List<Long> expectedStationIds = (List<Long>) arguments.get()[2];
 
-        // then
-        assertResponseCode(response, HttpStatus.CREATED);
-        List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationsIds).isEqualTo(expectedStationIds);
+            // when
+            ExtractableResponse<Response> response = addSection(findId(createdLineResponse), sectionParams);
+
+            // then
+            assertResponseCode(response, HttpStatus.CREATED);
+            List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
+            assertThat(stationsIds).isEqualTo(expectedStationIds);
+        }
     }
 
-    private static Stream<Arguments> addSectionParameters() {
-        return Stream.of(
+    private List<Arguments> addSectionFixtures() {
+        return List.of(
             Arguments.of(신분당선_PARAM, 홍대역_강남역_구간_PARAM, List.of(분당역_ID, 홍대역_ID, 강남역_ID)),
             Arguments.of(분당선_PARAM, 홍대역_분당역_구간_PARAM, List.of(홍대역_ID, 분당역_ID, 강남역_ID)),
             Arguments.of(신분당선_PARAM, 분당역_성수역_구간_PARAM, List.of(분당역_ID, 성수역_ID, 홍대역_ID))
@@ -213,25 +216,6 @@ public class LineAcceptanceTest {
         assertResponseCode(response, HttpStatus.OK);
         List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
         assertThat(stationIds).doesNotContain(강남역_ID);
-    }
-
-    /**
-     * Given: 특정 노선에 구간이 2개 이상 등록되어 있고,
-     * When: 노선의 하행역이 아닌 역을 제거하면,
-     * Then: 오류를 응답한다.
-     */
-    @DisplayName("지하철 노선에 등록된 하행 종점역이 아닌 구간을 제거하려 하면 오류가 발생한다.")
-    @Test
-    void deleteNotDownStationExceptionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-        addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 홍대역_ID);
-
-        // then
-        assertResponseCode(response, HttpStatus.BAD_REQUEST);
     }
 
     /**

@@ -17,7 +17,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            NotDownStationException.class,
             LastOneSectionException.class,
             DuplicateStationException.class
     })
