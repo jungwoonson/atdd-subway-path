@@ -9,7 +9,7 @@ import java.util.Map;
 public class LineAcceptanceTestFixture {
     static final String 신분당선 = "신분당선";
     static final String 분당선 = "분당선";
-    static final String 경희선 = "경희선";
+    static final String 경의선 = "경의선";
     static final String 중앙선 = "중앙선";
     static final String RED = "bg-red-600";
     static final String GREEN = "bg-green-600";
@@ -42,8 +42,8 @@ public class LineAcceptanceTestFixture {
             "distance", 4
     );
 
-    static final Map<String, Object> 경희선_PARAM = Map.of(
-            "name", 분당선,
+    static final Map<String, Object> 경의선_PARAM = Map.of(
+            "name", 경의선,
             "color", YELLOW,
             "upStationId", 강남역_ID,
             "downStationId", 성수역_ID,
@@ -51,7 +51,7 @@ public class LineAcceptanceTestFixture {
     );
 
     static final Map<String, Object> 중앙선_PARAM = Map.of(
-            "name", 분당선,
+            "name", 중앙선,
             "color", BLUE,
             "upStationId", 성수역_ID,
             "downStationId", 홍대역_ID,

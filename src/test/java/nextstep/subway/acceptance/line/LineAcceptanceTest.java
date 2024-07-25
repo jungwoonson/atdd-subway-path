@@ -260,7 +260,7 @@ public class LineAcceptanceTest {
         // given
         createLine(신분당선_PARAM);
         createLine(분당선_PARAM);
-        createLine(경희선_PARAM);
+        createLine(경의선_PARAM);
         createLine(중앙선_PARAM);
 
         // when

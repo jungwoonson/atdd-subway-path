@@ -110,4 +110,14 @@ public class LineService {
         return stationRepository.findById(stationId)
                 .orElseThrow(NotExistStationException::new);
     }
+
+    public PathsResponse findShortestPaths(Long source, Long target) {
+        List<Line> lines = lineRepository.findAll();
+
+        List<Sections> sectionsList = lines.stream()
+                .map(Line::getSections)
+                .collect(Collectors.toList());
+
+        return null;
+    }
 }

@@ -27,8 +27,8 @@ public class SectionTest {
     void dividedSectionTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
-        Section 강남역_홍대역 = createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE);
-        Section 홍대역_양재역 = createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE);
+        Section 강남역_홍대역 = createSection(신분당선, 강남역, 홍대역, DISTANCE_4);
+        Section 홍대역_양재역 = createSection(신분당선, 홍대역, 양재역, DISTANCE_6);
 
         // when
         Section actual = 강남역_양재역.dividedSection(강남역_홍대역);

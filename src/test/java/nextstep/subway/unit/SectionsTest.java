@@ -94,11 +94,11 @@ public class SectionsTest {
     }
 
     private static Section 강남역_홍대역() {
-        return createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE);
+        return createSection(신분당선, 강남역, 홍대역, DISTANCE_4);
     }
 
     private static Section 홍대역_양재역() {
-        return createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE);
+        return createSection(신분당선, 홍대역, 양재역, DISTANCE_6);
     }
 
     private static Section 양재역_강남역() {
