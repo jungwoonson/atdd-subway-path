@@ -52,15 +52,23 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (findEndSection().sameDownStationAndUpStationOf(section)) {
+        if (endSectionAddable(section)) {
             addEndSection(section);
             return;
         }
-        if (findStartSection().sameUpStationAndDownStationOf(section)) {
+        if (startSectionAddable(section)) {
             addStartSection(section);
             return;
         }
         addMiddleSection(section);
+    }
+
+    private boolean endSectionAddable(Section section) {
+        return findEndSection().sameDownStationAndUpStationOf(section);
+    }
+
+    private boolean startSectionAddable(Section section) {
+        return findStartSection().sameUpStationAndDownStationOf(section);
     }
 
     private void addEndSection(Section section) {
