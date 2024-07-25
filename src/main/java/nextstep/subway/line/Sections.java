@@ -173,8 +173,12 @@ public class Sections {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Sections sections1 = (Sections) o;
         return Objects.equals(getSortedSections(), sections1.getSortedSections());
     }

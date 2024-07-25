@@ -37,8 +37,12 @@ public class Stations {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Stations stations1 = (Stations) o;
         return Objects.equals(stations, stations1.stations);
     }

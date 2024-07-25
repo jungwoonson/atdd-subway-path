@@ -150,8 +150,12 @@ public class Section {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Section section = (Section) o;
         return isFirst == section.isFirst
                 && Objects.equals(line.getId(), section.line.getId())
