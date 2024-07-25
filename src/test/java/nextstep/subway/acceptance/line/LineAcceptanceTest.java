@@ -7,7 +7,9 @@ import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -199,23 +201,37 @@ public class LineAcceptanceTest {
 
     /**
      * Given: 특정 노선에 구간이 2개 이상 등록되어 있고,
-     * When: 노선의 하행역을 제거하면,
-     * Then: 노선을 조회했을 때 하행역이 제거된다.
+     * When: 지하철 역의 위치에 상관없이 구간을 제거하면,
+     * Then: 노선을 조회했을 때 구간이 제거된다.
      */
     @DisplayName("지하철 노선에 구간을 제거한다.")
     @Test
     void deleteSectionTest() {
-        // given
-        ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-        addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+        List<Arguments> fixtures = deleteSectionFixtures();
 
-        // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 강남역_ID);
+        for (Arguments fixture : fixtures) {
+            // given
+            ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
+            addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+            Long stationId = (Long) fixture.get()[0];
+            List<Long> expectedStationIds = (List<Long>) fixture.get()[1];
 
-        // then
-        assertResponseCode(response, HttpStatus.OK);
-        List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
-        assertThat(stationIds).doesNotContain(강남역_ID);
+            // when
+            ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), stationId);
+
+            // then
+            assertResponseCode(response, HttpStatus.OK);
+            List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
+            assertThat(stationIds).isEqualTo(expectedStationIds);
+        }
+    }
+
+    private static List<Arguments> deleteSectionFixtures() {
+        return List.of(
+                Arguments.of(분당역_ID, List.of(홍대역_ID, 강남역_ID)),
+                Arguments.of(홍대역_ID, List.of(홍대역_ID, 강남역_ID)),
+                Arguments.of(강남역_ID, List.of(분당역_ID, 홍대역_ID))
+        );
     }
 
     /**
