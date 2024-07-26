@@ -5,8 +5,16 @@ import nextstep.subway.station.StationResponse;
 import java.util.List;
 
 public class PathsResponse {
-    private List<StationResponse> stations;
     private int distance;
+    private List<StationResponse> stations;
+
+    public PathsResponse() {
+    }
+
+    public PathsResponse(int distance, List<StationResponse> stations) {
+        this.distance = distance;
+        this.stations = stations;
+    }
 
     public List<StationResponse> getStations() {
         return stations;

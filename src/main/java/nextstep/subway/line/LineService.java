@@ -1,12 +1,17 @@
 package nextstep.subway.line;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.exception.NotExistLineException;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
 import nextstep.subway.station.exception.NotExistStationException;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.KShortestPaths;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,8 +24,11 @@ public class LineService {
 
     private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    private SectionRepository sectionRepository;
+
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -100,10 +108,20 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    private List<StationResponse> createStationResponsesBy(List<Station> stations) {
+        return stations.stream()
+                .map(this::createStation)
+                .collect(Collectors.toList());
+    }
+
     private StationResponse createStation(Long stationId) {
         Station station = stationRepository.findById(stationId)
                 .orElseThrow(NotExistStationException::new);
         return new StationResponse(stationId, station.getName());
+    }
+
+    private StationResponse createStation(Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 
     private Station lookUpStationBy(Long stationId) {
@@ -112,6 +130,27 @@ public class LineService {
     }
 
     public PathsResponse findShortestPaths(Long source, Long target) {
-        return null;
+        List<Section> sections = sectionRepository.findAll();
+
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+
+        sections.forEach(section -> {
+            graph.addVertex(section.getUpStation());
+            graph.addVertex(section.getDownStation());
+            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+        });
+
+        int maxDistance = sections.stream().mapToInt(Section::getDistance).max().orElse(0);
+
+        Station start = lookUpStationBy(source);
+        Station end = lookUpStationBy(target);
+
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+        List<Station> shortestPath = dijkstraShortestPath.getPath(start, end).getVertexList();
+
+        List<GraphPath<Station, DefaultWeightedEdge>> paths = new KShortestPaths<>(graph, maxDistance)
+                .getPaths(start, end);
+
+        return new PathsResponse((int) paths.get(0).getWeight(), createStationResponsesBy(shortestPath));
     }
 }

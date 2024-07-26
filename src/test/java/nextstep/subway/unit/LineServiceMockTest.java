@@ -1,9 +1,6 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.line.Line;
-import nextstep.subway.line.LineRepository;
-import nextstep.subway.line.LineResponse;
-import nextstep.subway.line.LineService;
+import nextstep.subway.line.*;
 import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,12 +22,14 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationRepository stationRepository;
+    @Mock
+    private SectionRepository sectionRepository;
 
     @DisplayName("구간을 추가 함수는, 특정 노선에 구간을 추가하면 해당 구간이 추가된 노선 정보가 반환된다.")
     @Test
     void addSection() {
         // given
-        LineService lineService = new LineService(lineRepository, stationRepository);
+        LineService lineService = new LineService(lineRepository, sectionRepository, stationRepository);
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(양재역.getId())).thenReturn(Optional.of(양재역));
