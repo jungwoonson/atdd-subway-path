@@ -6,6 +6,7 @@ import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static nextstep.subway.unit.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("테스트DB 사용한 지하철 노선 서비스 테스트")
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
@@ -26,6 +28,7 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @DisplayName("구간을 추가 함수는, 특정 노선에 구간을 추가하면 해당 구간이 추가된 노선 정보가 반환된다.")
     @Test
     void addSection() {
         // given

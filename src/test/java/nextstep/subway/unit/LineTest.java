@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import static nextstep.subway.unit.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("노선 도메인 테스트")
 class LineTest {
 
     private Line 신분당선;
@@ -23,8 +24,8 @@ class LineTest {
         양재역_교대역 = createSection(신분당선, 양재역, 교대역, DEFAULT_DISTANCE);
     }
 
+    @DisplayName("구간 추가 함수는, 노선의 구간을 추가하고 해당 노선의 목록을 조회하면 해당 구간이 추가된다.")
     @Test
-    @DisplayName("구간을 추가한다.")
     void addSection() {
         // given
         Sections expected = Sections.of(강남역_양재역, 양재역_교대역);
@@ -36,21 +37,18 @@ class LineTest {
         assertThat(신분당선.getSections()).isEqualTo(expected);
     }
 
+    @DisplayName("구간 목록을 조회 함수는, 전체 구간 목록이 조회한다.")
     @Test
-    @DisplayName("구간을 조회한다.")
     void getStations() {
         //given
         Sections expected = Sections.from(강남역_양재역);
 
-        // when
-        신분당선.getStationIds();
-
-        // then
+        // when & then
         assertThat(신분당선.getSections()).isEqualTo(expected);
     }
 
+    @DisplayName("구간 제거거 함수는, 해당 노선의 구간을 제거하면 해당 구간이 제거된다.")
     @Test
-    @DisplayName("구간을 제거한다.")
     void removeSection() {
         // given
         Sections expected = Sections.from(강남역_양재역);

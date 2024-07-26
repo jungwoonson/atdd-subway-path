@@ -20,7 +20,7 @@ import java.util.Map;
 import static nextstep.subway.utils.AssertUtil.assertResponseCode;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철역 관련 인수 테스트")
 @ActiveProfiles("databaseCleanup")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationAcceptanceTest {
@@ -41,7 +41,7 @@ public class StationAcceptanceTest {
      * Then 지하철역이 생성된다
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("지하철역을 생성 요청은, 치하철 역 정보를 입력하여 요청하면 지하철역 목록을 조회했을 때 해당 역이 포함된다.")
     @Test
     void createStation() {
         // when
@@ -59,7 +59,7 @@ public class StationAcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철 역 목록 조회 요청은, 지하철 역 조회 요청을 하면 전체 지하철 역이 조회된다.")
     @Test
     void lookUpStation() {
         // given
@@ -81,7 +81,7 @@ public class StationAcceptanceTest {
      * When 그 지하철역을 삭제하면
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 삭제한다.")
+    @DisplayName("지하철 역 삭제 요청은, 지하철 역 삭제 요청 후 지하철 역 목록을 조회하면 해당역이 제외된다.")
     @Test
     void deleteStation() {
         // given
