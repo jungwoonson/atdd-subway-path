@@ -37,13 +37,13 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) {
-        return createLineResponse(findLineBy(id));
+    public LineResponse lookUpLine(Long id) {
+        return createLineResponse(lookUpLineBy(id));
     }
 
     @Transactional
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
-        Line line = findLineBy(id);
+        Line line = lookUpLineBy(id);
         line.modify(lineRequest.getName(), lineRequest.getColor());
         return createLineResponse(lineRepository.save(line));
     }
@@ -55,22 +55,22 @@ public class LineService {
 
     @Transactional
     public LineResponse addSections(Long id, SectionRequest sectionRequest) {
-        Station upStation = findStationBy(sectionRequest.getUpStationId());
-        Station downStation = findStationBy(sectionRequest.getDownStationId());
-        Line line = findLineBy(id);
+        Station upStation = lookUpStationBy(sectionRequest.getUpStationId());
+        Station downStation = lookUpStationBy(sectionRequest.getDownStationId());
+        Line line = lookUpLineBy(id);
         line.addSection(upStation, downStation, sectionRequest.getDistance());
         return createLineResponse(lineRepository.save(line));
     }
 
-    private Line findLineBy(Long id) {
+    private Line lookUpLineBy(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(NotExistLineException::new);
     }
 
     @Transactional
     public LineResponse deleteSection(Long lineId, Long stationId) {
-        Line line = findLineBy(lineId);
-        Station downStation = findStationBy(stationId);
+        Line line = lookUpLineBy(lineId);
+        Station downStation = lookUpStationBy(stationId);
         line.deleteSection(downStation);
         return createLineResponse(lineRepository.save(line));
     }
@@ -79,8 +79,8 @@ public class LineService {
         return Line.builder()
                 .name(lineRequest.getName())
                 .color(lineRequest.getColor())
-                .upStation(findStationBy(lineRequest.getUpStationId()))
-                .downStation(findStationBy(lineRequest.getDownStationId()))
+                .upStation(lookUpStationBy(lineRequest.getUpStationId()))
+                .downStation(lookUpStationBy(lineRequest.getDownStationId()))
                 .distance(lineRequest.getDistance())
                 .build();
     }
@@ -106,7 +106,7 @@ public class LineService {
         return new StationResponse(stationId, station.getName());
     }
 
-    private Station findStationBy(Long stationId) {
+    private Station lookUpStationBy(Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(NotExistStationException::new);
     }

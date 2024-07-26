@@ -30,7 +30,7 @@ public class LineController {
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLines(@PathVariable("id") Long id) {
         return ResponseEntity.ok()
-                .body(lineService.findLine(id));
+                .body(lineService.lookUpLine(id));
     }
 
     @PutMapping("/lines/{id}")

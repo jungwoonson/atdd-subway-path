@@ -48,7 +48,7 @@ public class LineAcceptanceTest {
 
         // then
         assertResponseCode(response, HttpStatus.CREATED);
-        assertThat(findNames(lookUpLines())).containsExactlyInAnyOrder(신분당선);
+        assertThat(getNames(findLines())).containsExactlyInAnyOrder(신분당선);
     }
 
     /**
@@ -58,17 +58,17 @@ public class LineAcceptanceTest {
      */
     @DisplayName("노선 목록 조회 요청은, 요청하면 전체 노선 목록이 조회된다.")
     @Test
-    void lookUpLinesTest() {
+    void findLinesTest() {
         // given
         createLine(신분당선_PARAM);
         createLine(분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = lookUpLines();
+        ExtractableResponse<Response> response = findLines();
 
         // then
         assertResponseCode(response, HttpStatus.OK);
-        assertThat(findNames(response)).containsExactlyInAnyOrder(신분당선, 분당선);
+        assertThat(getNames(response)).containsExactlyInAnyOrder(신분당선, 분당선);
     }
 
     /**
@@ -83,11 +83,11 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = lookUpLine(findId(createdLineResponse));
+        ExtractableResponse<Response> response = lookUpLine(getId(createdLineResponse));
 
         // then
         assertResponseCode(response, HttpStatus.OK);
-        assertThat(findName(response)).isEqualTo(신분당선);
+        assertThat(getName(response)).isEqualTo(신분당선);
     }
 
     /**
@@ -102,12 +102,12 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = modifyLine(findId(createdLineResponse), MODIFY_PARAM);
+        ExtractableResponse<Response> response = modifyLine(getId(createdLineResponse), MODIFY_PARAM);
 
         // then
         assertResponseCode(response, HttpStatus.OK);
-        ExtractableResponse<Response> lookedUpLine = lookUpLine(findId(createdLineResponse));
-        assertThat(findName(lookedUpLine)).isEqualTo(분당선);
+        ExtractableResponse<Response> lookedUpLine = lookUpLine(getId(createdLineResponse));
+        assertThat(getName(lookedUpLine)).isEqualTo(분당선);
         assertThat(lookedUpLine.jsonPath().getString("color")).isEqualTo(GREEN);
     }
 
@@ -123,11 +123,11 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = deleteLine(findId(createdLineResponse));
+        ExtractableResponse<Response> response = deleteLine(getId(createdLineResponse));
 
         // then
         assertResponseCode(response, HttpStatus.NO_CONTENT);
-        assertThat(findNames(lookUpLines())).doesNotContain(신분당선);
+        assertThat(getNames(findLines())).doesNotContain(신분당선);
     }
 
     /**
@@ -147,11 +147,11 @@ public class LineAcceptanceTest {
             List<Long> expectedStationIds = (List<Long>) arguments.get()[2];
 
             // when
-            ExtractableResponse<Response> response = addSection(findId(createdLineResponse), sectionParams);
+            ExtractableResponse<Response> response = addSection(getId(createdLineResponse), sectionParams);
 
             // then
             assertResponseCode(response, HttpStatus.CREATED);
-            List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
+            List<Long> stationsIds = getStationIds(getId(createdLineResponse));
             assertThat(stationsIds).isEqualTo(expectedStationIds);
         }
     }
@@ -190,7 +190,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = addSection(findId(createdLineResponse), 홍대역_서초역_구간_PARAM);
+        ExtractableResponse<Response> response = addSection(getId(createdLineResponse), 홍대역_서초역_구간_PARAM);
 
         // then
         assertResponseCode(response, HttpStatus.NOT_FOUND);
@@ -209,16 +209,16 @@ public class LineAcceptanceTest {
         for (Arguments fixture : fixtures) {
             // given
             ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-            addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+            addSection(getId(createdLineResponse), 홍대역_강남역_구간_PARAM);
             Long stationId = (Long) fixture.get()[0];
             List<Long> expectedStationIds = (List<Long>) fixture.get()[1];
 
             // when
-            ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), stationId);
+            ExtractableResponse<Response> response = deleteSection(getId(createdLineResponse), stationId);
 
             // then
             assertResponseCode(response, HttpStatus.OK);
-            List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
+            List<Long> stationIds = getStationIds(getId(createdLineResponse));
             assertThat(stationIds).isEqualTo(expectedStationIds);
         }
     }
@@ -243,7 +243,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 홍대역_ID);
+        ExtractableResponse<Response> response = deleteSection(getId(createdLineResponse), 홍대역_ID);
 
         // then
         assertResponseCode(response, HttpStatus.BAD_REQUEST);
@@ -258,7 +258,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> lookUpLines() {
+    private ExtractableResponse<Response> findLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
@@ -304,21 +304,22 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private List<Long> lookUpStationIds(Long lindId) {
+    private List<Long> getStationIds(Long lindId) {
         return lookUpLine(lindId).jsonPath()
                 .getList("stations.id", Long.class);
     }
 
-    private List<String> findNames(ExtractableResponse<Response> response) {
+    private List<String> getNames(ExtractableResponse<Response> response) {
         return response.jsonPath()
                 .getList("name", String.class);
     }
 
-    private static String findName(ExtractableResponse<Response> response) {
-        return response.jsonPath().getString("name");
+    private static String getName(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getString("name");
     }
 
-    private static long findId(ExtractableResponse<Response> createdLineResponse) {
+    private static long getId(ExtractableResponse<Response> createdLineResponse) {
         return createdLineResponse.jsonPath()
                 .getLong("id");
     }

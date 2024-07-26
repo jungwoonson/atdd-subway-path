@@ -51,7 +51,7 @@ public class StationAcceptanceTest {
         assertResponseCode(response, HttpStatus.CREATED);
 
         // then
-        assertThat(findNames(lookUpStations())).containsAnyOf(STATION_NAME_1);
+        assertThat(getNames(findStations())).containsAnyOf(STATION_NAME_1);
     }
 
     /**
@@ -67,13 +67,13 @@ public class StationAcceptanceTest {
         createStation(STATION_NAME_2);
 
         // when
-        ExtractableResponse<Response> response = lookUpStations();
+        ExtractableResponse<Response> response = findStations();
 
         // then
         assertResponseCode(response, HttpStatus.OK);
 
         // then
-        assertThat(findNames(response).size()).isEqualTo(2);
+        assertThat(getNames(response).size()).isEqualTo(2);
     }
 
     /**
@@ -95,7 +95,7 @@ public class StationAcceptanceTest {
         assertResponseCode(response, HttpStatus.NO_CONTENT);
 
         // then
-        assertThat(findNames(lookUpStations())).doesNotContain(STATION_NAME_1);
+        assertThat(getNames(findStations())).doesNotContain(STATION_NAME_1);
     }
 
     private static ExtractableResponse<Response> createStation(String stationName) {
@@ -110,16 +110,11 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> lookUpStations() {
+    private static ExtractableResponse<Response> findStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
-    }
-
-    private static List<String> findNames(ExtractableResponse<Response> response) {
-        return response.jsonPath()
-                .getList("name", String.class);
     }
 
     private static ExtractableResponse<Response> deleteStation(Integer id) {
@@ -127,5 +122,10 @@ public class StationAcceptanceTest {
                 .when().delete("/stations/" + id)
                 .then().log().all()
                 .extract();
+    }
+
+    private static List<String> getNames(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getList("name", String.class);
     }
 }
