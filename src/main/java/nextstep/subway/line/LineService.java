@@ -110,4 +110,8 @@ public class LineService {
         return stationRepository.findById(stationId)
                 .orElseThrow(NotExistStationException::new);
     }
+
+    public PathsResponse findShortestPaths(Long source, Long target) {
+        return null;
+    }
 }
