@@ -5,11 +5,6 @@ import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
 import nextstep.subway.station.exception.NotExistStationException;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.alg.shortestpath.KShortestPaths;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,6 +78,16 @@ public class LineService {
         return createLineResponse(lineRepository.save(line));
     }
 
+    public PathsResponse findShortestPaths(Long source, Long target) {
+        Station start = lookUpStationBy(source);
+        Station end = lookUpStationBy(target);
+
+        List<Section> sections = sectionRepository.findAll();
+        ShortestPath shortestPath = new ShortestPath(sections);
+
+        return new PathsResponse(shortestPath.getDistance(start, end), createStationResponses(shortestPath.getStations(start, end)));
+    }
+
     private Line createLine(LineRequest lineRequest) {
         return Line.builder()
                 .name(lineRequest.getName())
@@ -98,59 +103,29 @@ public class LineService {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .stations(createStationResponses(line.getStationIds()))
+                .stations(createStationResponsesByIds(line.getStationIds()))
                 .build();
     }
 
-    private List<StationResponse> createStationResponses(List<Long> stationIds) {
-        return stationIds.stream()
-                .map(this::createStation)
+    private List<StationResponse> createStationResponsesByIds(List<Long> stationIds) {
+        List<Station> stations = stationIds.stream()
+                .map(this::lookUpStationBy)
                 .collect(Collectors.toList());
+        return createStationResponses(stations);
     }
 
-    private List<StationResponse> createStationResponsesBy(List<Station> stations) {
+    private List<StationResponse> createStationResponses(List<Station> stations) {
         return stations.stream()
-                .map(this::createStation)
+                .map(LineService::createStationResponse)
                 .collect(Collectors.toList());
     }
 
-    private StationResponse createStation(Long stationId) {
-        Station station = stationRepository.findById(stationId)
-                .orElseThrow(NotExistStationException::new);
-        return new StationResponse(stationId, station.getName());
-    }
-
-    private StationResponse createStation(Station station) {
+    private static StationResponse createStationResponse(Station station) {
         return new StationResponse(station.getId(), station.getName());
     }
 
     private Station lookUpStationBy(Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(NotExistStationException::new);
-    }
-
-    public PathsResponse findShortestPaths(Long source, Long target) {
-        List<Section> sections = sectionRepository.findAll();
-
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-
-        sections.forEach(section -> {
-            graph.addVertex(section.getUpStation());
-            graph.addVertex(section.getDownStation());
-            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-        });
-
-        int maxDistance = sections.stream().mapToInt(Section::getDistance).max().orElse(0);
-
-        Station start = lookUpStationBy(source);
-        Station end = lookUpStationBy(target);
-
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        List<Station> shortestPath = dijkstraShortestPath.getPath(start, end).getVertexList();
-
-        List<GraphPath<Station, DefaultWeightedEdge>> paths = new KShortestPaths<>(graph, maxDistance)
-                .getPaths(start, end);
-
-        return new PathsResponse((int) paths.get(0).getWeight(), createStationResponsesBy(shortestPath));
     }
 }
