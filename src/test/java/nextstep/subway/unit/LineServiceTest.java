@@ -50,10 +50,10 @@ public class LineServiceTest {
         Station 교대역 = stationRepository.save(LineTestFixture.교대역);
         Station 홍대역 = stationRepository.save(LineTestFixture.홍대역);
 
-        Line 신분당선 = lineRepository.save(신분당선(강남역, 양재역));
-        Line 분당선 = lineRepository.save(분당선(양재역, 교대역));
-        Line 중앙선 = lineRepository.save(중앙선(교대역, 홍대역));
-        Line 경의선 = lineRepository.save(경의선(홍대역, 강남역));
+        lineRepository.save(신분당선(강남역, 양재역));
+        lineRepository.save(분당선(양재역, 교대역));
+        lineRepository.save(중앙선(교대역, 홍대역));
+        lineRepository.save(경의선(홍대역, 강남역));
 
         // when
         PathsResponse pathsResponse = lineService.findShortestPaths(강남역.getId(), 교대역.getId());

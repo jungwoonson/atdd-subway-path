@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.exception.SameSourceAndTargetException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +61,9 @@ public class LineController {
 
     @GetMapping("/paths")
     public ResponseEntity<PathsResponse> findShortestPath(@RequestParam("source") Long source, @RequestParam("target") Long target) {
+        if (source.equals(target)) {
+            throw new SameSourceAndTargetException();
+        }
         return ResponseEntity.ok()
                 .body(lineService.findShortestPaths(source, target));
     }
