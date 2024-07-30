@@ -21,13 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ShortestPathTest {
-
-    private static final Line 신분당선 = 신분당선(강남역, 양재역);
-    private static final Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
-    private static final Section 양재역_교대역 = createSection(신분당선, 양재역, 교대역, DISTANCE_4);
-    private static final Section 교대역_홍대역 = createSection(신분당선, 교대역, 홍대역, DISTANCE_6);
-    private static final Section 홍대역_강남역 = createSection(신분당선, 홍대역, 강남역, DISTANCE_7);
-    private static final List<Section> 연결된구간 = List.of(강남역_양재역, 양재역_교대역, 교대역_홍대역, 홍대역_강남역);
     private static final List<Section> 열결되지않은구간 = List.of(강남역_양재역, 교대역_홍대역);
     private static final Station 구간에없는역 = Station.of(100L, "구간에없는역");
 

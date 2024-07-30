@@ -15,14 +15,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("구간 도메인 테스트")
 public class SectionTest {
 
-    private Line 신분당선;
-
-    @BeforeEach
-    void setUp() {
-        // given
-        신분당선 = 신분당선(강남역, 양재역);
-    }
-
     @Test
     @DisplayName("구간 분리 함수는, 현재 구간의 상행역과 주어진 구간의 하행역이 연결된다.")
     void dividedSectionTest() {

@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("구간 일급 컬렉션 도메인 테스트")
 public class SectionsTest {
 
-    private static Line 신분당선 = 신분당선(강남역, 양재역);
-
     @DisplayName("구간 추가 함수는, 유효한 구간 추가를 요청할 경우 정상적으로 추가된다.")
     @ParameterizedTest
     @MethodSource("addSectionParameters")
