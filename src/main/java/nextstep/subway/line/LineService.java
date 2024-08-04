@@ -4,6 +4,7 @@ import nextstep.subway.line.exception.NotExistLineException;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
+import nextstep.subway.station.Stations;
 import nextstep.subway.station.exception.NotExistStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,25 +91,15 @@ public class LineService {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .stations(createStationResponsesByIds(line.getStationIds()))
+                .stations(createStationResponses(line.getStations()))
                 .build();
     }
 
-    private List<StationResponse> createStationResponsesByIds(List<Long> stationIds) {
-        List<Station> stations = stationIds.stream()
-                .map(this::lookUpStationBy)
+    private static List<StationResponse> createStationResponses(Stations stations) {
+        return stations.getStations()
+                .stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
-        return createStationResponses(stations);
-    }
-
-    private List<StationResponse> createStationResponses(List<Station> stations) {
-        return stations.stream()
-                .map(LineService::createStationResponse)
-                .collect(Collectors.toList());
-    }
-
-    private static StationResponse createStationResponse(Station station) {
-        return new StationResponse(station.getId(), station.getName());
     }
 
     private Station lookUpStationBy(Long stationId) {

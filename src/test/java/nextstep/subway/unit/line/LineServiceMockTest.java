@@ -29,7 +29,6 @@ public class LineServiceMockTest {
         // given
         LineService lineService = new LineService(lineRepository, stationRepository);
 
-        when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(양재역.getId())).thenReturn(Optional.of(양재역));
         when(stationRepository.findById(교대역.getId())).thenReturn(Optional.of(교대역));
         Line 신분당선 = 신분당선(강남역, 양재역);

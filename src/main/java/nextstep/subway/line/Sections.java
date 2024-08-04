@@ -121,11 +121,7 @@ public class Sections {
         return sortedSections;
     }
 
-    public List<Long> getSortedStationIds() {
-        return getSortedStations().getStationIds();
-    }
-
-    private Stations getSortedStations() {
+    public Stations getSortedStations() {
         Section startSection = getStartSection();
         Stations stations = Stations.of(startSection.getUpStation(), startSection.getDownStation());
         for (Section section : sections) {

@@ -37,12 +37,8 @@ public class PathService {
 
     private List<StationResponse> createStationResponses(List<Station> stations) {
         return stations.stream()
-                .map(PathService::createStationResponse)
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
-    }
-
-    private static StationResponse createStationResponse(Station station) {
-        return new StationResponse(station.getId(), station.getName());
     }
 
     private Station lookUpStationBy(Long stationId) {

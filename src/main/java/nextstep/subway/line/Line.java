@@ -1,9 +1,9 @@
 package nextstep.subway.line;
 
 import nextstep.subway.station.Station;
+import nextstep.subway.station.Stations;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -52,8 +52,8 @@ public class Line {
         sections.delete(station);
     }
 
-    public List<Long> getStationIds() {
-        return sections.getSortedStationIds();
+    public Stations getStations() {
+        return sections.getSortedStations();
     }
 
     public Long getId() {
