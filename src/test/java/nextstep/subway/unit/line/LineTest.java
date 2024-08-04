@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.unit.line.LineTestFixture.*;
+import static nextstep.subway.unit.UnitTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 도메인 테스트")

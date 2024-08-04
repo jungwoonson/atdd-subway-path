@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.line.LineAcceptanceTestFixture.*;
+import static nextstep.subway.acceptance.AcceptanceTestFixture.*;
 import static nextstep.subway.utils.AssertUtil.assertResponseCode;
 import static org.assertj.core.api.Assertions.assertThat;
 

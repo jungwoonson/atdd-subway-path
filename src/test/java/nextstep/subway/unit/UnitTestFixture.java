@@ -1,4 +1,4 @@
-package nextstep.subway.unit.line;
+package nextstep.subway.unit;
 
 import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
@@ -9,7 +9,8 @@ import nextstep.subway.station.StationResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LineTestFixture {
+public class UnitTestFixture {
+    public static final String RED = "bg-red-600";
     public static final int DEFAULT_DISTANCE = 10;
     public static final int DISTANCE_4 = 4;
     public static final int DISTANCE_6 = 6;
@@ -33,6 +34,36 @@ public class LineTestFixture {
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(DEFAULT_DISTANCE)
+                .build();
+    }
+
+    public static Line 분당선(Station upStation, Station downStation) {
+        return Line.builder()
+                .name("분당선")
+                .color(RED)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(DISTANCE_4)
+                .build();
+    }
+
+    public static Line 중앙선(Station upStation, Station downStation) {
+        return Line.builder()
+                .name("중앙선")
+                .color(RED)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(DISTANCE_6)
+                .build();
+    }
+
+    public static Line 경의선(Station upStation, Station downStation) {
+        return Line.builder()
+                .name("경의선")
+                .color(RED)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(DISTANCE_7)
                 .build();
     }
 

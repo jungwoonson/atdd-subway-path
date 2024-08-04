@@ -1,6 +1,7 @@
 package nextstep.subway.utils;
 
 import nextstep.subway.acceptance.line.LineAcceptanceTest;
+import nextstep.subway.acceptance.path.PathAcceptanceTest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -39,10 +40,18 @@ public class DatabaseCleanup implements InitializingBean {
     }
 
     private void truncateTables(Object testClass, String tableName) {
-        if (testClass.equals(LineAcceptanceTest.class) && tableName.equals("Station")) {
-            return;
-        }
+        if (notTruncateAble(testClass, tableName)) return;
         entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE " + tableName + " ALTER COLUMN ID RESTART WITH 1").executeUpdate();
+    }
+
+    private static boolean notTruncateAble(Object testClass, String tableName) {
+        if (testClass.equals(LineAcceptanceTest.class) && tableName.equals("Station")) {
+            return true;
+        }
+        if (testClass.equals(PathAcceptanceTest.class) && tableName.equals("Station")) {
+            return true;
+        }
+        return false;
     }
 }

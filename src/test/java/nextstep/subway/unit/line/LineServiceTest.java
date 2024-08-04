@@ -3,6 +3,7 @@ package nextstep.subway.unit.line;
 import nextstep.subway.line.*;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import nextstep.subway.unit.UnitTestFixture;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nextstep.subway.unit.line.LineTestFixture.*;
+import static nextstep.subway.unit.UnitTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("테스트DB 사용한 지하철 노선 서비스 테스트")
@@ -41,9 +42,9 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        Station 강남역 = stationRepository.save(LineTestFixture.강남역);
-        Station 양재역 = stationRepository.save(LineTestFixture.양재역);
-        Station 교대역 = stationRepository.save(LineTestFixture.교대역);
+        Station 강남역 = stationRepository.save(UnitTestFixture.강남역);
+        Station 양재역 = stationRepository.save(UnitTestFixture.양재역);
+        Station 교대역 = stationRepository.save(UnitTestFixture.교대역);
         Line line = lineRepository.save(신분당선(강남역, 양재역));
 
         // when

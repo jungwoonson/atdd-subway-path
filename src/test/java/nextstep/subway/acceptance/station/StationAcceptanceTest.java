@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.AcceptanceTestFixture.강남역;
+import static nextstep.subway.acceptance.AcceptanceTestFixture.홍대역;
 import static nextstep.subway.utils.AssertUtil.assertResponseCode;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,9 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("databaseCleanup")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationAcceptanceTest {
-
-    private static final String STATION_NAME_1 = "강남역";
-    private static final String STATION_NAME_2 = "역삼역";
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -45,13 +44,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = createStation(STATION_NAME_1);
+        ExtractableResponse<Response> response = createStation(강남역);
 
         // then
         assertResponseCode(response, HttpStatus.CREATED);
 
         // then
-        assertThat(getNames(findStations())).containsAnyOf(STATION_NAME_1);
+        assertThat(getNames(findStations())).containsAnyOf(강남역);
     }
 
     /**
@@ -63,8 +62,8 @@ public class StationAcceptanceTest {
     @Test
     void lookUpStation() {
         // given
-        createStation(STATION_NAME_1);
-        createStation(STATION_NAME_2);
+        createStation(강남역);
+        createStation(홍대역);
 
         // when
         ExtractableResponse<Response> response = findStations();
@@ -85,7 +84,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Integer id = createStation(STATION_NAME_1).jsonPath()
+        Integer id = createStation(강남역).jsonPath()
                 .get("id");
 
         // when
@@ -95,7 +94,7 @@ public class StationAcceptanceTest {
         assertResponseCode(response, HttpStatus.NO_CONTENT);
 
         // then
-        assertThat(getNames(findStations())).doesNotContain(STATION_NAME_1);
+        assertThat(getNames(findStations())).doesNotContain(강남역);
     }
 
     private static ExtractableResponse<Response> createStation(String stationName) {
