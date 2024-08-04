@@ -52,18 +52,4 @@ public class LineControllerMockTest {
         mockMvc.perform(post(String.format("/lines/%s/sections", lineId)))
                 .andExpect(status().isBadRequest());
     }
-
-    @DisplayName("출발역과 도착역이 같을 경우 400 에러를 응답한다.")
-    @Test
-    void sameSourceAndTargetException() throws Exception {
-        // given
-        String stationId = "1";
-
-        // when & then
-        mockMvc.perform(get("/paths")
-                        .param("source", stationId)
-                        .param("target", stationId))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("출발역과 도착역은 달라야합니다."));
-    }
 }
