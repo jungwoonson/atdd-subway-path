@@ -1,8 +1,7 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.path;
 
-import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
-import nextstep.subway.line.ShortestPath;
+import nextstep.subway.path.ShortestPath;
 import nextstep.subway.line.exception.NotAddedStationsToSectionException;
 import nextstep.subway.line.exception.NotConnectedStationsException;
 import nextstep.subway.station.Station;
@@ -16,7 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static nextstep.subway.unit.LineTestFixture.*;
+import static nextstep.subway.unit.line.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

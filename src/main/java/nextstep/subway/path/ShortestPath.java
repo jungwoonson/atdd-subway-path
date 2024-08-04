@@ -1,5 +1,6 @@
-package nextstep.subway.line;
+package nextstep.subway.path;
 
+import nextstep.subway.line.Section;
 import nextstep.subway.line.exception.NotAddedStationsToSectionException;
 import nextstep.subway.line.exception.NotConnectedStationsException;
 import nextstep.subway.station.Station;

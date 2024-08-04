@@ -1,6 +1,5 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
-import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.Sections;
 import nextstep.subway.line.exception.DuplicateStationException;
@@ -13,7 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static nextstep.subway.unit.LineTestFixture.*;
+import static nextstep.subway.unit.line.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

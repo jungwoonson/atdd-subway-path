@@ -19,11 +19,8 @@ public class LineService {
 
     private StationRepository stationRepository;
 
-    private SectionRepository sectionRepository;
-
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -76,16 +73,6 @@ public class LineService {
         Station downStation = lookUpStationBy(stationId);
         line.deleteSection(downStation);
         return createLineResponse(lineRepository.save(line));
-    }
-
-    public PathsResponse findShortestPaths(Long source, Long target) {
-        Station start = lookUpStationBy(source);
-        Station end = lookUpStationBy(target);
-
-        List<Section> sections = sectionRepository.findAll();
-        ShortestPath shortestPath = new ShortestPath(sections);
-
-        return new PathsResponse(shortestPath.getDistance(start, end), createStationResponses(shortestPath.getStations(start, end)));
     }
 
     private Line createLine(LineRequest lineRequest) {

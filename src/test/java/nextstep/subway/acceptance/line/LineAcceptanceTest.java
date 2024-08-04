@@ -249,29 +249,6 @@ public class LineAcceptanceTest {
         assertResponseCode(response, HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Given: 연결된 구간을 가진 노선들이 등록되어있고,
-     * When: 출발역과 도착역을 입력하여 최단거리 경로를 조회하면,
-     * Then: 출발역에서 도착역까지 죄단거리의 경로와 거리의 길이가 조회된다.
-     */
-    @DisplayName("최단거리 경로 조회 요청은, 출발역과 도착역을 입력하여 최단거리 경로를 조회하면 죄단거리의 경로와 거리의 길이가 조회된다.")
-    @Test
-    void findShortestPathTest() {
-        // given
-        createLine(신분당선_PARAM);
-        createLine(분당선_PARAM);
-        createLine(경의선_PARAM);
-        createLine(중앙선_PARAM);
-
-        // when
-        ExtractableResponse<Response> response = findShortestPaths(분당역_ID, 성수역_ID);
-
-        // then
-        assertResponseCode(response, HttpStatus.OK);
-        assertThat(getStationIds(response)).containsExactly(분당역_ID, 강남역_ID, 성수역_ID);
-        assertThat(getDistance(response)).isEqualTo(5);
-    }
-
     private ExtractableResponse<Response> createLine(Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .body(params)
@@ -327,20 +304,8 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> findShortestPaths(Long source, Long target) {
-        return RestAssured.given().log().all()
-                .when().get(String.format("/paths?source=%d&target=%d", source, target))
-                .then().log().all()
-                .extract();
-    }
-
     private List<Long> getStationIds(Long lindId) {
         return lookUpLine(lindId).jsonPath()
-                .getList("stations.id", Long.class);
-    }
-
-    private List<Long> getStationIds(ExtractableResponse<Response> response) {
-        return response.jsonPath()
                 .getList("stations.id", Long.class);
     }
 
@@ -357,10 +322,5 @@ public class LineAcceptanceTest {
     private static long getId(ExtractableResponse<Response> createdLineResponse) {
         return createdLineResponse.jsonPath()
                 .getLong("id");
-    }
-
-    private static int getDistance(ExtractableResponse<Response> response) {
-        return response.jsonPath()
-                .getInt("distance");
     }
 }

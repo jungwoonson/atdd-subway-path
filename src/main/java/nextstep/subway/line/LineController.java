@@ -58,13 +58,4 @@ public class LineController {
         return ResponseEntity.ok()
                 .body(lineService.deleteSection(id, stationId));
     }
-
-    @GetMapping("/paths")
-    public ResponseEntity<PathsResponse> findShortestPath(@RequestParam("source") Long source, @RequestParam("target") Long target) {
-        if (source.equals(target)) {
-            throw new SameSourceAndTargetException();
-        }
-        return ResponseEntity.ok()
-                .body(lineService.findShortestPaths(source, target));
-    }
 }

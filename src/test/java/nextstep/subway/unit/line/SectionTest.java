@@ -1,14 +1,12 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
-import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.exception.NotLessThanExistingDistanceException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.unit.LineTestFixture.*;
+import static nextstep.subway.unit.line.LineTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
