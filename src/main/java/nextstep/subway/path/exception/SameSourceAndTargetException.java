@@ -1,4 +1,4 @@
-package nextstep.subway.line.exception;
+package nextstep.subway.path.exception;
 
 public class SameSourceAndTargetException extends IllegalArgumentException {
 

@@ -1,7 +1,7 @@
 package nextstep.subway.path;
 
 import nextstep.subway.line.PathsResponse;
-import nextstep.subway.line.exception.SameSourceAndTargetException;
+import nextstep.subway.path.exception.SameSourceAndTargetException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

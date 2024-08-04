@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import nextstep.subway.line.exception.SameSourceAndTargetException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
