@@ -1,34 +1,25 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
-import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.exception.NotLessThanExistingDistanceException;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.unit.LineTestFixture.*;
+import static nextstep.subway.unit.UnitTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("구간 도메인 테스트")
 public class SectionTest {
 
-    private Line 신분당선;
-
-    @BeforeEach
-    void setUp() {
-        // given
-        신분당선 = 신분당선(강남역, 양재역);
-    }
-
     @Test
-    @DisplayName("주어진 구간의 하행 역과 현재 구간의 하행 역이 연결된 새로운 구간을 생성한다.")
+    @DisplayName("구간 분리 함수는, 현재 구간의 상행역과 주어진 구간의 하행역이 연결된다.")
     void dividedSectionTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
-        Section 강남역_홍대역 = createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE);
-        Section 홍대역_양재역 = createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE);
+        Section 강남역_홍대역 = createSection(신분당선, 강남역, 홍대역, DISTANCE_4);
+        Section 홍대역_양재역 = createSection(신분당선, 홍대역, 양재역, DISTANCE_6);
 
         // when
         Section actual = 강남역_양재역.dividedSection(강남역_홍대역);
@@ -38,7 +29,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("구간 분리 시 새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외를 발생시킨다.")
+    @DisplayName("구간 분리 함시 실행 중, 새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외를 발생시킨다.")
     void GraterOrEqualExistingDistanceExceptionTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
@@ -52,7 +43,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("두 구간의 상행역이 같은지 확인한다.")
+    @DisplayName("상행역 비교 함수는, 현재 구간과 주어진 구간의 상행역이 같은지 확인한다.")
     void sameUpStationTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
@@ -63,7 +54,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("현재 구간의 하행역과 주어진 구간의 상행역이 같은지 확인한다.")
+    @DisplayName("하행역과 상행역 비교 함수는, 현재 구간의 하행역과 주어진 구간의 상행역이 같은지 확인한다.")
     void sameDownStationAndUpStationOfNewSectionTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
@@ -74,7 +65,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("현재 구간의 상행역과 주어진 구간의 하행역이 같은지 확인한다.")
+    @DisplayName("상행역과 상행역 비교 함수는, 현재 구간의 상행역과 주어진 구간의 하행역이 같은지 확인한다.")
     void sameUpStationAndDownStationOfNewSectionTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
@@ -85,7 +76,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("구간의 첫 번째를 판단하는 상태 값을 true로 바꾼다.")
+    @DisplayName("첫 번째로 변경 함수는, 구간의 첫 번째를 판단하는 상태 값을 true로 바꾼다.")
     void changeToFirstTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);
@@ -98,7 +89,7 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("구간의 첫 번째를 판단하는 상태 값을 false로 바꾼다.")
+    @DisplayName("첫 번째가 아닌걸로 변경하는 함수는, 구간의 첫 번째를 판단하는 상태 값을 false로 바꾼다.")
     void changeToNotFirstTest() {
         // given
         Section 강남역_양재역 = createSection(신분당선, 강남역, 양재역, DEFAULT_DISTANCE);

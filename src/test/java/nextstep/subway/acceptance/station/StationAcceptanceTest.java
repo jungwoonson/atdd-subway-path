@@ -17,16 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.AcceptanceTestFixture.강남역;
+import static nextstep.subway.acceptance.AcceptanceTestFixture.홍대역;
 import static nextstep.subway.utils.AssertUtil.assertResponseCode;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철역 관련 인수 테스트")
 @ActiveProfiles("databaseCleanup")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationAcceptanceTest {
-
-    private static final String STATION_NAME_1 = "강남역";
-    private static final String STATION_NAME_2 = "역삼역";
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -41,17 +40,17 @@ public class StationAcceptanceTest {
      * Then 지하철역이 생성된다
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
-    @DisplayName("지하철역을 생성한다.")
+    @DisplayName("지하철역을 생성 요청은, 치하철 역 정보를 입력하여 요청하면 지하철역 목록을 조회했을 때 해당 역이 포함된다.")
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = createStation(STATION_NAME_1);
+        ExtractableResponse<Response> response = createStation(강남역);
 
         // then
         assertResponseCode(response, HttpStatus.CREATED);
 
         // then
-        assertThat(findNames(lookUpStations())).containsAnyOf(STATION_NAME_1);
+        assertThat(getNames(findStations())).containsAnyOf(강남역);
     }
 
     /**
@@ -59,21 +58,21 @@ public class StationAcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철 역 목록 조회 요청은, 지하철 역 조회 요청을 하면 전체 지하철 역이 조회된다.")
     @Test
     void lookUpStation() {
         // given
-        createStation(STATION_NAME_1);
-        createStation(STATION_NAME_2);
+        createStation(강남역);
+        createStation(홍대역);
 
         // when
-        ExtractableResponse<Response> response = lookUpStations();
+        ExtractableResponse<Response> response = findStations();
 
         // then
         assertResponseCode(response, HttpStatus.OK);
 
         // then
-        assertThat(findNames(response).size()).isEqualTo(2);
+        assertThat(getNames(response).size()).isEqualTo(2);
     }
 
     /**
@@ -81,11 +80,11 @@ public class StationAcceptanceTest {
      * When 그 지하철역을 삭제하면
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 삭제한다.")
+    @DisplayName("지하철 역 삭제 요청은, 지하철 역 삭제 요청 후 지하철 역 목록을 조회하면 해당역이 제외된다.")
     @Test
     void deleteStation() {
         // given
-        Integer id = createStation(STATION_NAME_1).jsonPath()
+        Integer id = createStation(강남역).jsonPath()
                 .get("id");
 
         // when
@@ -95,7 +94,7 @@ public class StationAcceptanceTest {
         assertResponseCode(response, HttpStatus.NO_CONTENT);
 
         // then
-        assertThat(findNames(lookUpStations())).doesNotContain(STATION_NAME_1);
+        assertThat(getNames(findStations())).doesNotContain(강남역);
     }
 
     private static ExtractableResponse<Response> createStation(String stationName) {
@@ -110,16 +109,11 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> lookUpStations() {
+    private static ExtractableResponse<Response> findStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
-    }
-
-    private static List<String> findNames(ExtractableResponse<Response> response) {
-        return response.jsonPath()
-                .getList("name", String.class);
     }
 
     private static ExtractableResponse<Response> deleteStation(Integer id) {
@@ -127,5 +121,10 @@ public class StationAcceptanceTest {
                 .when().delete("/stations/" + id)
                 .then().log().all()
                 .extract();
+    }
+
+    private static List<String> getNames(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getList("name", String.class);
     }
 }

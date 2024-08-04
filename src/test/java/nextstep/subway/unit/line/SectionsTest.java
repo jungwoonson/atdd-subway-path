@@ -1,6 +1,5 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
-import nextstep.subway.line.Line;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.Sections;
 import nextstep.subway.line.exception.DuplicateStationException;
@@ -13,15 +12,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static nextstep.subway.unit.LineTestFixture.*;
+import static nextstep.subway.unit.UnitTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("구간 일급 컬렉션 도메인 테스트")
 public class SectionsTest {
 
-    private static Line 신분당선 = 신분당선(강남역, 양재역);
-
-    @DisplayName("처음, 가운데, 마지막 구간을 추가한다.")
+    @DisplayName("구간 추가 함수는, 유효한 구간 추가를 요청할 경우 정상적으로 추가된다.")
     @ParameterizedTest
     @MethodSource("addSectionParameters")
     void addSectionTest(Section section, Section newSection, Sections expected) {
@@ -63,7 +61,7 @@ public class SectionsTest {
         );
     }
 
-    @DisplayName("처음, 가운데, 마지막 구간을 제거한다.")
+    @DisplayName("구간 삭제 함수는, 유효한 구간 삭제를 요청할 경우 정상적으로 삭제된다.")
     @ParameterizedTest
     @MethodSource("deleteSectionParameters")
     void deleteSectionTest(Station station, Sections expected) {
@@ -94,11 +92,11 @@ public class SectionsTest {
     }
 
     private static Section 강남역_홍대역() {
-        return createSection(신분당선, 강남역, 홍대역, 강남역_홍대역_DISTANCE);
+        return createSection(신분당선, 강남역, 홍대역, DISTANCE_4);
     }
 
     private static Section 홍대역_양재역() {
-        return createSection(신분당선, 홍대역, 양재역, 홍대역_양재역_DISTANCE);
+        return createSection(신분당선, 홍대역, 양재역, DISTANCE_6);
     }
 
     private static Section 양재역_강남역() {

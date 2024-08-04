@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,6 +34,10 @@ public class Stations {
 
     public boolean contains(Station station) {
         return stations.contains(station);
+    }
+
+    public List<Station> getStations() {
+        return Collections.unmodifiableList(stations);
     }
 
     @Override

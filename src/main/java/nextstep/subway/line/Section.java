@@ -15,10 +15,10 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lineId", referencedColumnName = "id")
     private Line line;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "upStationId", referencedColumnName = "id")
     private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "downStationId", referencedColumnName = "id")
     private Station downStation;
     @Column(nullable = false)

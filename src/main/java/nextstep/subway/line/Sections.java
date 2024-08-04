@@ -53,11 +53,11 @@ public class Sections {
     }
 
     private boolean endSectionAddable(Section section) {
-        return findEndSection().sameDownStationAndUpStationOf(section);
+        return getEndSection().sameDownStationAndUpStationOf(section);
     }
 
     private boolean startSectionAddable(Section section) {
-        return findStartSection().sameUpStationAndDownStationOf(section);
+        return getStartSection().sameUpStationAndDownStationOf(section);
     }
 
     private void addEndSection(Section section) {
@@ -69,7 +69,7 @@ public class Sections {
     private void addStartSection(Section section) {
         validateDuplicate(section.getUpStation());
 
-        Section beforeStartSection = findStartSection();
+        Section beforeStartSection = getStartSection();
         beforeStartSection.changeToNotFirst();
         section.changeToFirst();
         sections.add(section);
@@ -101,7 +101,7 @@ public class Sections {
         sections.add(dividedSection);
     }
 
-    private Section findNextSection(Section section) {
+    private Section lookUpNextSection(Section section) {
         return sections.stream()
                 .filter(it -> it.sameUpStation(section.getDownStation()))
                 .findFirst()
@@ -110,23 +110,19 @@ public class Sections {
 
     private List<Section> getSortedSections() {
         List<Section> sortedSections = new ArrayList<>();
-        Section currentSection = findStartSection();
+        Section currentSection = getStartSection();
 
         sortedSections.add(currentSection);
         while (sections.size() > sortedSections.size()) {
-            currentSection = findNextSection(currentSection);
+            currentSection = lookUpNextSection(currentSection);
             sortedSections.add(currentSection);
         }
 
         return sortedSections;
     }
 
-    public List<Long> getSortedStationIds() {
-        return getSortedStations().getStationIds();
-    }
-
-    private Stations getSortedStations() {
-        Section startSection = findStartSection();
+    public Stations getSortedStations() {
+        Section startSection = getStartSection();
         Stations stations = Stations.of(startSection.getUpStation(), startSection.getDownStation());
         for (Section section : sections) {
             appendStations(stations, section);
@@ -134,14 +130,14 @@ public class Sections {
         return stations;
     }
 
-    private Section findStartSection() {
+    private Section getStartSection() {
         return sections.stream()
                 .filter(Section::isFirst)
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
-    private Section findEndSection() {
+    private Section getEndSection() {
         List<Section> sortedSections = getSortedSections();
         return sortedSections.get(sortedSections.size() - 1);
     }
@@ -169,31 +165,31 @@ public class Sections {
     }
 
     private boolean deleteAbleEndSection(Station station) {
-        return findEndSection().sameDownStation(station);
+        return getEndSection().sameDownStation(station);
     }
 
     private boolean deleteAbleStartSection(Station station) {
-        return findStartSection().sameUpStation(station);
+        return getStartSection().sameUpStation(station);
     }
 
     private void deleteStartSection() {
-        Section nextSection = findNextSection(findStartSection());
+        Section nextSection = lookUpNextSection(getStartSection());
         nextSection.changeToFirst();
-        sections.remove(findStartSection());
+        sections.remove(getStartSection());
     }
 
     private void deleteEndSection() {
-        sections.remove(findEndSection());
+        sections.remove(getEndSection());
     }
 
     private void deleteMiddleSection(Station station) {
-        Section frontSection = findSectionWithDownStation(station);
-        Section backSection = findNextSection(frontSection);
+        Section frontSection = lookUpSectionWithDownStation(station);
+        Section backSection = lookUpNextSection(frontSection);
         frontSection.mergeSection(backSection);
         sections.remove(backSection);
     }
 
-    private Section findSectionWithDownStation(Station station) {
+    private Section lookUpSectionWithDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.sameDownStation(station))
                 .findFirst()

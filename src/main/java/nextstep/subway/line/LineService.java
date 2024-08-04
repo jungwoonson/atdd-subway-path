@@ -1,12 +1,13 @@
 package nextstep.subway.line;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.exception.NotExistLineException;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
+import nextstep.subway.station.Stations;
 import nextstep.subway.station.exception.NotExistStationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,13 +38,13 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) {
-        return createLineResponse(findLineBy(id));
+    public LineResponse lookUpLine(Long id) {
+        return createLineResponse(lookUpLineBy(id));
     }
 
     @Transactional
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
-        Line line = findLineBy(id);
+        Line line = lookUpLineBy(id);
         line.modify(lineRequest.getName(), lineRequest.getColor());
         return createLineResponse(lineRepository.save(line));
     }
@@ -55,22 +56,22 @@ public class LineService {
 
     @Transactional
     public LineResponse addSections(Long id, SectionRequest sectionRequest) {
-        Station upStation = findStationBy(sectionRequest.getUpStationId());
-        Station downStation = findStationBy(sectionRequest.getDownStationId());
-        Line line = findLineBy(id);
+        Station upStation = lookUpStationBy(sectionRequest.getUpStationId());
+        Station downStation = lookUpStationBy(sectionRequest.getDownStationId());
+        Line line = lookUpLineBy(id);
         line.addSection(upStation, downStation, sectionRequest.getDistance());
         return createLineResponse(lineRepository.save(line));
     }
 
-    private Line findLineBy(Long id) {
+    private Line lookUpLineBy(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(NotExistLineException::new);
     }
 
     @Transactional
     public LineResponse deleteSection(Long lineId, Long stationId) {
-        Line line = findLineBy(lineId);
-        Station downStation = findStationBy(stationId);
+        Line line = lookUpLineBy(lineId);
+        Station downStation = lookUpStationBy(stationId);
         line.deleteSection(downStation);
         return createLineResponse(lineRepository.save(line));
     }
@@ -79,8 +80,8 @@ public class LineService {
         return Line.builder()
                 .name(lineRequest.getName())
                 .color(lineRequest.getColor())
-                .upStation(findStationBy(lineRequest.getUpStationId()))
-                .downStation(findStationBy(lineRequest.getDownStationId()))
+                .upStation(lookUpStationBy(lineRequest.getUpStationId()))
+                .downStation(lookUpStationBy(lineRequest.getDownStationId()))
                 .distance(lineRequest.getDistance())
                 .build();
     }
@@ -90,23 +91,18 @@ public class LineService {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .stations(createStationResponses(line.getStationIds()))
+                .stations(createStationResponses(line.getStations()))
                 .build();
     }
 
-    private List<StationResponse> createStationResponses(List<Long> stationIds) {
-        return stationIds.stream()
-                .map(this::createStation)
+    private static List<StationResponse> createStationResponses(Stations stations) {
+        return stations.getStations()
+                .stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
 
-    private StationResponse createStation(Long stationId) {
-        Station station = stationRepository.findById(stationId)
-                .orElseThrow(NotExistStationException::new);
-        return new StationResponse(stationId, station.getName());
-    }
-
-    private Station findStationBy(Long stationId) {
+    private Station lookUpStationBy(Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(NotExistStationException::new);
     }

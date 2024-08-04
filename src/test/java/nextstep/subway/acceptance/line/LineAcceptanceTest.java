@@ -7,9 +7,7 @@ import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -18,14 +16,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import static nextstep.subway.acceptance.line.LineAcceptanceTestFixture.*;
+import static nextstep.subway.acceptance.AcceptanceTestFixture.*;
 import static nextstep.subway.utils.AssertUtil.assertResponseCode;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@DisplayName("지하철 역 노선 관련 기능")
+@DisplayName("노선 관련 인수 테스트")
 @ActiveProfiles("databaseCleanup")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class LineAcceptanceTest {
@@ -43,7 +40,7 @@ public class LineAcceptanceTest {
      * When 관리자가 노선을 생성하면
      * Then 해당 노선이 생성되고 노선 목록에 포함된다
      */
-    @DisplayName("노선을 생성한다.")
+    @DisplayName("노선 생성 요청은, 노선 정보를 입력하고 요청하면 노선 조회시 노선이 목록에 포함된다.")
     @Test
     void createLineTest() {
         // when
@@ -51,7 +48,7 @@ public class LineAcceptanceTest {
 
         // then
         assertResponseCode(response, HttpStatus.CREATED);
-        assertThat(findNames(lookUpLines())).containsExactlyInAnyOrder(신분당선);
+        assertThat(getNames(findLines())).containsExactlyInAnyOrder(신분당선);
     }
 
     /**
@@ -59,19 +56,19 @@ public class LineAcceptanceTest {
      * When 관리자가 지하철 노선 목록을 조회하면,
      * Then 모든 지하철 노선 목록이 반환된다.
      */
-    @DisplayName("노선 목록을 조회한다.")
+    @DisplayName("노선 목록 조회 요청은, 요청하면 전체 노선 목록이 조회된다.")
     @Test
-    void lookUpLinesTest() {
+    void findLinesTest() {
         // given
         createLine(신분당선_PARAM);
         createLine(분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = lookUpLines();
+        ExtractableResponse<Response> response = findLines();
 
         // then
         assertResponseCode(response, HttpStatus.OK);
-        assertThat(findNames(response)).containsExactlyInAnyOrder(신분당선, 분당선);
+        assertThat(getNames(response)).containsExactlyInAnyOrder(신분당선, 분당선);
     }
 
     /**
@@ -79,18 +76,18 @@ public class LineAcceptanceTest {
      * When: 관리자가 해당 노선을 조회하면,
      * Then: 해당 노선의 정보가 반환된다.
      */
-    @DisplayName("노선을 조회한다.")
+    @DisplayName("특정 노선 조회 요청은, 특정 노선 조회를 요청하면 해당 노선의 정보가 반환된다.")
     @Test
     void lookUpLineTest() {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = lookUpLine(findId(createdLineResponse));
+        ExtractableResponse<Response> response = lookUpLine(getId(createdLineResponse));
 
         // then
         assertResponseCode(response, HttpStatus.OK);
-        assertThat(findName(response)).isEqualTo(신분당선);
+        assertThat(getName(response)).isEqualTo(신분당선);
     }
 
     /**
@@ -98,19 +95,19 @@ public class LineAcceptanceTest {
      * When: 관리자가 해당 노선을 수정하면,
      * Then: 해당 노선의 정보가 수정된다.
      */
-    @DisplayName("노선을 수정한다.")
+    @DisplayName("노선 수정 요청은, 노선 수정 요청을하면 해당 노선 조회시 수정된 정보가 조회된다.")
     @Test
     void modifyLineTest() {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = modifyLine(findId(createdLineResponse), MODIFY_PARAM);
+        ExtractableResponse<Response> response = modifyLine(getId(createdLineResponse), MODIFY_PARAM);
 
         // then
         assertResponseCode(response, HttpStatus.OK);
-        ExtractableResponse<Response> lookedUpLine = lookUpLine(findId(createdLineResponse));
-        assertThat(findName(lookedUpLine)).isEqualTo(분당선);
+        ExtractableResponse<Response> lookedUpLine = lookUpLine(getId(createdLineResponse));
+        assertThat(getName(lookedUpLine)).isEqualTo(분당선);
         assertThat(lookedUpLine.jsonPath().getString("color")).isEqualTo(GREEN);
     }
 
@@ -119,18 +116,18 @@ public class LineAcceptanceTest {
      * When: 관리자가 해당 노선을 삭제하면,
      * Then: 해당 노선이 삭제되고 노선 목록에서 제외된다.
      */
-    @DisplayName("노선을 삭제한다.")
+    @DisplayName("노선 삭제 요청은, 노선 삭제를 요청하면 전체 노선을 조회했을 때 해당 노선이 제외된다.")
     @Test
     void deleteLineTest() {
         // given
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = deleteLine(findId(createdLineResponse));
+        ExtractableResponse<Response> response = deleteLine(getId(createdLineResponse));
 
         // then
         assertResponseCode(response, HttpStatus.NO_CONTENT);
-        assertThat(findNames(lookUpLines())).doesNotContain(신분당선);
+        assertThat(getNames(findLines())).doesNotContain(신분당선);
     }
 
     /**
@@ -138,7 +135,7 @@ public class LineAcceptanceTest {
      * When: 구간을 추가하면,
      * Then: 노선 조회시 구간이 등록되어있다.
      */
-    @DisplayName("노선에 새로운 구간을 추가한다.")
+    @DisplayName("노선 구간 추가 요청은, 특정 노선에 구간 추가 요청을 하면 해당 노선 조회시 등록된 구간이 조회된다.")
     @Test
     void addSectionTest() {
         List<Arguments> fixtures = addSectionFixtures();
@@ -150,11 +147,11 @@ public class LineAcceptanceTest {
             List<Long> expectedStationIds = (List<Long>) arguments.get()[2];
 
             // when
-            ExtractableResponse<Response> response = addSection(findId(createdLineResponse), sectionParams);
+            ExtractableResponse<Response> response = addSection(getId(createdLineResponse), sectionParams);
 
             // then
             assertResponseCode(response, HttpStatus.CREATED);
-            List<Long> stationsIds = lookUpStationIds(findId(createdLineResponse));
+            List<Long> stationsIds = getStationIds(getId(createdLineResponse));
             assertThat(stationsIds).isEqualTo(expectedStationIds);
         }
     }
@@ -171,7 +168,7 @@ public class LineAcceptanceTest {
      * When: 존재하지 않는 노선에 구간을 등록하면,
      * Then: 오류를 응답한다.
      */
-    @DisplayName("존재하지 않는 노선에 구간을 등록하면 오류가 발생한다.")
+    @DisplayName("존재하지 않는 노선에 구간 등록 요청을하면 오류가 발생한다.")
     @Test
     void notExistLineExceptionTest() {
         // when
@@ -193,7 +190,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = addSection(findId(createdLineResponse), 홍대역_서초역_구간_PARAM);
+        ExtractableResponse<Response> response = addSection(getId(createdLineResponse), 홍대역_서초역_구간_PARAM);
 
         // then
         assertResponseCode(response, HttpStatus.NOT_FOUND);
@@ -204,7 +201,7 @@ public class LineAcceptanceTest {
      * When: 지하철 역의 위치에 상관없이 구간을 제거하면,
      * Then: 노선을 조회했을 때 구간이 제거된다.
      */
-    @DisplayName("지하철 노선에 구간을 제거한다.")
+    @DisplayName("지하철 구간 제거 요청은, 특정 노선에 지하철 구간 제거 요청을 하면 해당 노선을 조회했을 때 구간이 제거된다.")
     @Test
     void deleteSectionTest() {
         List<Arguments> fixtures = deleteSectionFixtures();
@@ -212,16 +209,16 @@ public class LineAcceptanceTest {
         for (Arguments fixture : fixtures) {
             // given
             ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
-            addSection(findId(createdLineResponse), 홍대역_강남역_구간_PARAM);
+            addSection(getId(createdLineResponse), 홍대역_강남역_구간_PARAM);
             Long stationId = (Long) fixture.get()[0];
             List<Long> expectedStationIds = (List<Long>) fixture.get()[1];
 
             // when
-            ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), stationId);
+            ExtractableResponse<Response> response = deleteSection(getId(createdLineResponse), stationId);
 
             // then
             assertResponseCode(response, HttpStatus.OK);
-            List<Long> stationIds = lookUpStationIds(findId(createdLineResponse));
+            List<Long> stationIds = getStationIds(getId(createdLineResponse));
             assertThat(stationIds).isEqualTo(expectedStationIds);
         }
     }
@@ -246,7 +243,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createdLineResponse = createLine(신분당선_PARAM);
 
         // when
-        ExtractableResponse<Response> response = deleteSection(findId(createdLineResponse), 홍대역_ID);
+        ExtractableResponse<Response> response = deleteSection(getId(createdLineResponse), 홍대역_ID);
 
         // then
         assertResponseCode(response, HttpStatus.BAD_REQUEST);
@@ -261,7 +258,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> lookUpLines() {
+    private ExtractableResponse<Response> findLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
@@ -307,21 +304,22 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private List<Long> lookUpStationIds(Long lindId) {
+    private List<Long> getStationIds(Long lindId) {
         return lookUpLine(lindId).jsonPath()
                 .getList("stations.id", Long.class);
     }
 
-    private List<String> findNames(ExtractableResponse<Response> response) {
+    private List<String> getNames(ExtractableResponse<Response> response) {
         return response.jsonPath()
                 .getList("name", String.class);
     }
 
-    private static String findName(ExtractableResponse<Response> response) {
-        return response.jsonPath().getString("name");
+    private static String getName(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getString("name");
     }
 
-    private static long findId(ExtractableResponse<Response> createdLineResponse) {
+    private static long getId(ExtractableResponse<Response> createdLineResponse) {
         return createdLineResponse.jsonPath()
                 .getLong("id");
     }
